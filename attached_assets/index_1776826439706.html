@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAPID</title>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    background: #f5f5f5;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: #C0302A;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .header h1 {
+    color: white;
+    font-size: 32px;
+    letter-spacing: 4px;
+  }
+
+  .header p {
+    color: #f5a5a5;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.input-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 0.5px solid #ddd;
+}
+
+.input-section h2 {
+  font-size: 18px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.input-section p {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 16px;
+}
+
+textarea {
+  width: 100%;
+  height: 120px;
+  padding: 12px;
+  border: 0.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  color: #1a1a1a;
+}
+
+textarea:focus {
+  border-color: #C0302A;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+.mic-btn {
+  flex: 1;
+  padding: 12px;
+  border: 0.5px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  color: #1a1a1a;
+}
+
+.camera-btn {
+  flex: 1;
+  padding: 12px;
+  border: 0.5px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  color: #1a1a1a;
+}
+
+.mic-btn:hover {
+  background: #f5f5f5;
+}
+
+.camera-btn:hover {
+  background: #f5f5f5;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #C0302A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #a02020;
+}
+
+.result-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 0.5px solid #ddd;
+  margin-top: 20px;
+  display: none;
+}
+
+.result-section h2 {
+  font-size: 18px;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.result-card {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.instructions-card {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.result-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.result-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.camera-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 0.5px solid #ddd;
+  margin-top: 20px;
+  display: none;
+  text-align: center;
+}
+
+video {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.capture-btn {
+  width: 100%;
+  padding: 14px;
+  background: #1a3a5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.capture-btn:hover {
+  background: #0f2a4a;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>RAPID</h1>
+  <p>Emergency Response System</p>
+</div>
+
+<div class="container">
+  <div class="input-section">
+    <h2>Describe your emergency</h2>
+    <p>Type, speak or show your emergency below</p>
+    
+    <textarea id="messageInput" placeholder="Example: There is smoke coming from my room..."></textarea>
+    
+    <div class="button-row">
+      <button class="mic-btn" id="micBtn">Mic</button>
+      <button class="camera-btn" id="cameraBtn">Camera</button>
+    </div>
+    
+    <button class="submit-btn" id="submitBtn">Send Emergency Alert</button>
+  </div>
+
+  <div class="camera-section" id="cameraSection">
+  <video id="videoFeed" autoplay playsinline></video>
+  <canvas id="canvas" style="display:none"></canvas>
+  <button class="capture-btn" id="captureBtn">Capture Photo</button>
+</div>
+
+  <div class="result-section" id="resultSection">
+  <h2>Emergency Analysis</h2>
+  
+  <div class="result-grid">
+    <div class="result-card">
+      <p class="result-label">Category</p>
+      <p class="result-value" id="category">-</p>
+    </div>
+    
+    <div class="result-card">
+      <p class="result-label">Severity</p>
+      <p class="result-value" id="severity">-</p>
+    </div>
+    
+    <div class="result-card">
+      <p class="result-label">Call</p>
+      <p class="result-value" id="call">-</p>
+    </div>
+  </div>
+  
+  <div class="instructions-card">
+    <p class="result-label">Instructions</p>
+    <p class="result-value" id="instructions">-</p>
+  </div>
+</div>
+</div>
+
+<script>
+  const submitBtn = document.getElementById('submitBtn');
+  const messageInput = document.getElementById('messageInput');
+  const resultSection = document.getElementById('resultSection');
+  const categoryEl = document.getElementById('category');
+  const severityEl = document.getElementById('severity');
+  const callEl = document.getElementById('call');
+  const instructionsEl = document.getElementById('instructions');
+
+  const API_URL = "http://localhost:5000/classify";
+  submitBtn.addEventListener('click', async () => {
+    const message = messageInput.value.trim();
+    
+    if(message === '') {
+      alert('Please describe your emergency first');
+      return;
+    }
+
+    submitBtn.textContent = 'Analyzing...';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify({ message: message })
+      });
+
+      const data = await response.json();
+      const result = data.result;
+
+      const lines = result.split('\n');
+      
+      lines.forEach(line => {
+        if(line.startsWith('Category:')) categoryEl.textContent = line.replace('Category:', '').trim();
+        if(line.startsWith('Severity:')) severityEl.textContent = line.replace('Severity:', '').trim();
+        if(line.startsWith('Call:')) callEl.textContent = line.replace('Call:', '').trim();
+        if(line.startsWith('Instructions:')) instructionsEl.textContent = line.replace('Instructions:', '').trim();
+      });
+
+      resultSection.style.display = 'block';
+
+    } catch(error) {
+      alert('Something went wrong. Please try again.');
+    }
+
+    submitBtn.textContent = 'Send Emergency Alert';
+    submitBtn.disabled = false;
+  });
+
+  const micBtn = document.getElementById('micBtn');
+
+const recognition = new webkitSpeechRecognition();
+recognition.lang = 'en-US';
+recognition.continuous = false;
+recognition.interimResults = false;
+
+micBtn.addEventListener('click', () => {
+  recognition.start();
+  micBtn.textContent = 'Listening...';
+  micBtn.style.background = '#fff0f0';
+  micBtn.style.borderColor = '#C0302A';
+});
+
+recognition.onresult = (event) => {
+  const transcript = event.results[0][0].transcript;
+  messageInput.value = transcript;
+  micBtn.textContent = 'Mic';
+  micBtn.style.background = 'white';
+  micBtn.style.borderColor = '#ddd';
+};
+
+recognition.onerror = (event) => {
+  alert('Microphone error. Please allow microphone access.');
+  micBtn.textContent = 'Mic';
+  micBtn.style.background = 'white';
+  micBtn.style.borderColor = '#ddd';
+};
+
+recognition.onend = () => {
+  micBtn.textContent = 'Mic';
+  micBtn.style.background = 'white';
+  micBtn.style.borderColor = '#ddd';
+};
+
+const cameraBtn = document.getElementById('cameraBtn');
+const cameraSection = document.getElementById('cameraSection');
+const videoFeed = document.getElementById('videoFeed');
+const canvas = document.getElementById('canvas');
+const captureBtn = document.getElementById('captureBtn');
+
+let stream = null;
+
+cameraBtn.addEventListener('click', async () => {
+  if(cameraSection.style.display === 'block') {
+    cameraSection.style.display = 'none';
+    if(stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+    cameraBtn.textContent = 'Camera';
+    return;
+  }
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoFeed.srcObject = stream;
+    cameraSection.style.display = 'block';
+    cameraBtn.textContent = 'Close Camera';
+  } catch(error) {
+    alert('Camera access denied. Please allow camera permission.');
+  }
+});
+
+captureBtn.addEventListener('click', async () => {
+  canvas.width = videoFeed.videoWidth;
+  canvas.height = videoFeed.videoHeight;
+  canvas.getContext('2d').drawImage(videoFeed, 0, 0);
+  
+  const imageBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
+
+  captureBtn.textContent = 'Analyzing image...';
+  captureBtn.disabled = true;
+
+  try {
+    const response = await fetch(API_URL.replace('/classify', '/classify-image'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
+      body: JSON.stringify({ image: imageBase64 })
+    });
+
+    const data = await response.json();
+    const result = data.result;
+
+    const lines = result.split('\n');
+
+    lines.forEach(line => {
+      if(line.startsWith('Category:')) categoryEl.textContent = line.replace('Category:', '').trim();
+      if(line.startsWith('Severity:')) severityEl.textContent = line.replace('Severity:', '').trim();
+      if(line.startsWith('Call:')) callEl.textContent = line.replace('Call:', '').trim();
+      if(line.startsWith('Instructions:')) instructionsEl.textContent = line.replace('Instructions:', '').trim();
+    });
+
+    resultSection.style.display = 'block';
+    cameraSection.style.display = 'none';
+    stream.getTracks().forEach(track => track.stop());
+    cameraBtn.textContent = 'Camera';
+
+  } catch(error) {
+    alert('Something went wrong. Please try again.');
+  }
+
+  captureBtn.textContent = 'Capture Photo';
+  captureBtn.disabled = false;
+});
+</script>
+
+</body>
+</html>
