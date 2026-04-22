@@ -1,4 +1,4 @@
-import { ai } from "@workspace/integrations-gemini-ai";
+import { getAiClient, hasAiClient } from "@workspace/integrations-gemini-ai";
 import type { Classification } from "./store";
 import { logger } from "./logger";
 
@@ -101,8 +101,156 @@ function coerceClassification(raw: unknown): Classification {
   };
 }
 
+function fallbackClassification(message: string): Classification {
+  const text = message.toLowerCase();
+  const byPriority: Array<{
+    match: string[];
+    classification: Classification;
+  }> = [
+    {
+      match: ["fire", "smoke", "burn", "flames"],
+      classification: {
+        category: "Fire",
+        severity: "High",
+        callService: "Fire Brigade",
+        instructions: [
+          "Move away from the hazard immediately.",
+          "Alert nearby staff and avoid elevators.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible fire or smoke emergency reported by guest.",
+        keywords: ["fire", "smoke"],
+      },
+    },
+    {
+      match: ["blood", "injury", "injured", "faint", "unconscious", "breathing", "heart", "medical"],
+      classification: {
+        category: "Medical",
+        severity: "High",
+        callService: "Ambulance",
+        instructions: [
+          "Move to a safe area if possible.",
+          "Keep the person still and call staff immediately.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible medical emergency reported by guest.",
+        keywords: ["medical", "injury"],
+      },
+    },
+    {
+      match: ["intruder", "threat", "stalker", "attack", "assault", "panic", "help"],
+      classification: {
+        category: "Security",
+        severity: "Critical",
+        callService: "Police",
+        instructions: [
+          "Move to a secure place and stay quiet.",
+          "Contact on-site security immediately.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible security threat reported by guest.",
+        keywords: ["security", "threat"],
+      },
+    },
+    {
+      match: ["water", "flood", "leak", "ceiling", "paani"],
+      classification: {
+        category: "Flood",
+        severity: "Medium",
+        callService: "Maintenance",
+        instructions: [
+          "Move valuables away from the leak.",
+          "Avoid wet electrical outlets and notify staff.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible leak or flooding issue reported by guest.",
+        keywords: ["water", "leak"],
+      },
+    },
+    {
+      match: ["gas", "smell", "odor"],
+      classification: {
+        category: "Gas Leak",
+        severity: "Critical",
+        callService: "Gas Authority",
+        instructions: [
+          "Leave the area immediately.",
+          "Do not use electrical switches or open flames.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible gas leak reported by guest.",
+        keywords: ["gas", "smell"],
+      },
+    },
+    {
+      match: ["spark", "electrical", "wire", "shock", "blackout"],
+      classification: {
+        category: "Electrical",
+        severity: "High",
+        callService: "Electricians",
+        instructions: [
+          "Stay away from exposed wires or sparks.",
+          "Turn off power only if it is safe to do so.",
+        ],
+        detectedLanguage: "English",
+        languageCode: "en",
+        translatedSummary: "Possible electrical hazard reported by guest.",
+        keywords: ["electrical", "spark"],
+      },
+    },
+  ];
+
+  for (const option of byPriority) {
+    if (option.match.some((token) => text.includes(token))) {
+      return option.classification;
+    }
+  }
+
+  return {
+    category: "Other",
+    severity: "Medium",
+    callService: "Maintenance",
+    instructions: [
+      "Move to a safe area if needed.",
+      "Wait for venue staff to assist you.",
+    ],
+    detectedLanguage: "English",
+    languageCode: "en",
+    translatedSummary: "Unclassified guest emergency reported.",
+    keywords: ["other"],
+  };
+}
+
+function fallbackImageClassification(): Classification {
+  return {
+    category: "Other",
+    severity: "Medium",
+    callService: "Security",
+    instructions: [
+      "Move to a safe area if there is immediate danger.",
+      "Wait for staff and describe what you can see.",
+    ],
+    detectedLanguage: "English",
+    languageCode: "en",
+    translatedSummary: "Image-based incident received without AI classification configured.",
+    keywords: ["image", "manual_review"],
+  };
+}
+
 export async function classifyMessage(message: string): Promise<Classification> {
-  const response = await ai.models.generateContent({
+  if (!hasAiClient()) {
+    logger.warn(
+      "Gemini integration not configured; using fallback text classifier.",
+    );
+    return fallbackClassification(message);
+  }
+
+  const response = await getAiClient().models.generateContent({
     model: "gemini-2.5-flash",
     contents: [
       {
@@ -129,7 +277,15 @@ export async function classifyMessage(message: string): Promise<Classification> 
 }
 
 export async function classifyImage(imageBase64: string): Promise<Classification> {
-  const response = await ai.models.generateContent({
+  if (!hasAiClient()) {
+    logger.warn(
+      "Gemini integration not configured; using fallback image classifier.",
+    );
+    void imageBase64;
+    return fallbackImageClassification();
+  }
+
+  const response = await getAiClient().models.generateContent({
     model: "gemini-2.5-flash",
     contents: [
       {

@@ -1,0 +1,1 @@
+window.RAPID_FIREBASE_CONFIG = window.RAPID_FIREBASE_CONFIG || {};

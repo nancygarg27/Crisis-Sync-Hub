@@ -47,3 +47,20 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.db
+
+# Environment variables
+.env
+
+# Git folder (safety)
+.git/
+
+# Agents (Replit wala junk)
+.agents/

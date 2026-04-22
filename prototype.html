@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>RAPID Crisis Response</title>
+  <style>
+    :root {
+      --background: #1f2228;
+      --card: #272b33;
+      --card-2: #2d323c;
+      --border: #3a404c;
+      --text: #f5f7fb;
+      --muted: #a8b1c0;
+      --primary: #ef4444;
+      --primary-soft: rgba(239, 68, 68, 0.12);
+      --critical: #ef4444;
+      --critical-soft: rgba(239, 68, 68, 0.16);
+      --high: #f97316;
+      --high-soft: rgba(249, 115, 22, 0.16);
+      --medium: #eab308;
+      --medium-soft: rgba(234, 179, 8, 0.16);
+      --low: #3b82f6;
+      --low-soft: rgba(59, 130, 246, 0.16);
+      --success: #22c55e;
+      --success-soft: rgba(34, 197, 94, 0.16);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(239, 68, 68, 0.14), transparent 28%),
+        linear-gradient(180deg, #1b1d22 0%, #181a1f 100%);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(31, 34, 40, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .container {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 64px;
+      padding: 0 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: white;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .nav-link {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-link.active {
+      background: var(--primary-soft);
+      color: white;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .backend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #21252d;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .backend-pill.online {
+      border-color: rgba(34, 197, 94, 0.35);
+      color: #bbf7d0;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .backend-pill.offline {
+      border-color: rgba(234, 179, 8, 0.35);
+      color: #fde68a;
+      background: rgba(234, 179, 8, 0.1);
+    }
+
+    main.container {
+      padding: 24px 4px 40px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .grid-guest {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .grid-role {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .grid-two {
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 22px 22px 0;
+    }
+
+    .card-body {
+      padding: 22px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-top: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #1f232a;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .location-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--border);
+      background: #21252d;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    .location-meta {
+      color: var(--muted);
+      font-size: .88rem;
+      margin-top: 4px;
+    }
+
+    .helper-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: var(--card-2); color: var(--text); }
+    .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-danger { background: var(--critical); color: white; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .sev-low { background: var(--low-soft); color: #93c5fd; }
+    .sev-medium { background: var(--medium-soft); color: #fde68a; }
+    .sev-high { background: var(--high-soft); color: #fdba74; }
+    .sev-critical { background: var(--critical-soft); color: #fca5a5; }
+
+    .analysis-box {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #21252d;
+      padding: 18px;
+    }
+
+    .analysis-box ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      color: var(--muted);
+    }
+
+    .sos-card {
+      margin-top: 22px;
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+    }
+
+    .sos-area {
+      text-align: center;
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.08), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .sos-ring {
+      width: 150px;
+      height: 150px;
+      margin: 18px auto 0;
+      padding: 10px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--critical) var(--sos-progress, 0%), rgba(239, 68, 68, 0.14) 0);
+    }
+
+    .sos-ring::before {
+      content: "";
+      position: absolute;
+    }
+
+    .sos-button {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--critical);
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 800;
+      box-shadow: 0 14px 28px rgba(239, 68, 68, 0.25);
+      cursor: pointer;
+    }
+
+    .prompt-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .prompt-item {
+      border: 1px solid var(--border);
+      background: #21252d;
+      color: var(--muted);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .role-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .role-card {
+      border: 1px solid var(--border);
+      background: #21252d;
+      color: var(--text);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .role-card strong {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .auth-box {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .auth-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .language-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .lang-chip {
+      border: 1px solid var(--border);
+      background: #21252d;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .lang-chip.active {
+      background: var(--primary-soft);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: white;
+    }
+
+    .micro-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin-top: 14px;
+    }
+
+    .micro-stat {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #1f232a;
+      padding: 14px;
+    }
+
+    .micro-stat .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .micro-stat strong {
+      font-size: 1.15rem;
+    }
+
+    .kpis {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .kpi strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 2rem;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 16px;
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-step {
+      position: relative;
+      padding-left: 34px;
+    }
+
+    .timeline-step::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+    }
+
+    .incident-feed {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .incident-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .incident-card header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .incident-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .filter-pill {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .filter-pill.active {
+      background: var(--primary-soft);
+      color: white;
+    }
+
+    .staff-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      margin-top: 16px;
+    }
+
+    .staff-card {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      margin-top: 10px;
+      font-size: .92rem;
+    }
+
+    .status-dot::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .status-dot.busy::before { background: #64748b; }
+
+    .table-wrap {
+      margin-top: 18px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #1f232a;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .map-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .floor-tab {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #21252d;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .floor-tab.active {
+      background: var(--primary-soft);
+      color: white;
+    }
+
+    .map-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
+      margin-top: 18px;
+    }
+
+    .floor-map {
+      position: relative;
+      min-height: 620px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)),
+        radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: auto, 20px 20px;
+      overflow: hidden;
+    }
+
+    .room {
+      position: absolute;
+      border: 1px solid #4a5260;
+      border-radius: 14px;
+      background: rgba(39, 43, 51, 0.94);
+      color: var(--text);
+      font-size: .64rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+      overflow: hidden;
+    }
+
+    .room-label {
+      display: block;
+      max-width: 100%;
+      line-height: 1.1;
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: normal;
+      font-size: clamp(.54rem, .72vw, .8rem);
+      letter-spacing: -0.01em;
+    }
+
+    .room:hover { transform: scale(1.02); }
+    .room.selected {
+      border-color: #f8fafc;
+      box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.18);
+    }
+    .room.alert-low { box-shadow: 0 0 0 3px rgba(59,130,246,.18), 0 10px 20px rgba(59,130,246,.12); }
+    .room.alert-medium { box-shadow: 0 0 0 3px rgba(234,179,8,.18), 0 10px 20px rgba(234,179,8,.12); }
+    .room.alert-high { box-shadow: 0 0 0 3px rgba(249,115,22,.18), 0 10px 24px rgba(249,115,22,.16); }
+    .room.alert-critical { box-shadow: 0 0 0 4px rgba(239,68,68,.18), 0 14px 28px rgba(239,68,68,.24); animation: pulse 1.2s infinite; }
+
+    .detail-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-line {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .detail-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .broadcast-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .broadcast-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #21252d;
+      padding: 14px;
+    }
+
+    .broadcast-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .media-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(7, 10, 15, 0.82);
+    }
+
+    .media-modal.open {
+      display: flex;
+    }
+
+    .media-shell {
+      width: min(640px, 100%);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: #171a20;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .media-preview {
+      width: 100%;
+      max-height: 420px;
+      background: #0f1115;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      color: var(--muted);
+      background: #21252d;
+    }
+
+    @media (max-width: 980px) {
+      .grid-two, .map-grid { grid-template-columns: 1fr; }
+      .kpis { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .container { width: min(100% - 20px, 1240px); }
+      .topbar-inner { flex-direction: column; align-items: flex-start; padding: 12px 4px; }
+      nav { width: 100%; }
+      .topbar-meta { width: 100%; justify-content: space-between; }
+      main.container { padding-top: 20px; }
+      .role-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">!</div>
+          <div class="brand-name">RAPID</div>
+        </div>
+        <div class="topbar-meta">
+          <div class="backend-pill offline" id="backend-status">Local Demo Mode</div>
+          <nav>
+            <button class="nav-link active" data-screen="guest" data-role-view="guest">Guest</button>
+            <button class="nav-link" data-screen="alert" data-role-view="guest">My Alert</button>
+            <button class="nav-link" data-screen="map" data-role-view="guest">Floor Map</button>
+            <button class="nav-link" data-screen="staff" data-role-view="staff">Staff</button>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="screen-role" class="screen active">
+        <div class="grid grid-role">
+          <div class="card">
+            <div class="card-header">
+              <h1 class="title">Who Are You?</h1>
+              <p class="subtitle">Choose your role to open the right crisis-response interface.</p>
+            </div>
+            <div class="card-body">
+              <div class="role-options">
+                <button class="role-card" data-role-select="guest">
+                  <strong>Guest</strong>
+                  <div class="subtitle">Report emergencies, track your alert, and view the floor map.</div>
+                </button>
+                <button class="role-card" data-role-select="staff">
+                  <strong>Staff</strong>
+                  <div class="subtitle">Open the operations dashboard, dispatch responders, and monitor incidents.</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-staff-auth" class="screen">
+        <div class="auth-box">
+          <div class="card">
+            <div class="card-header">
+              <h1 class="title">Staff Verification</h1>
+              <p class="subtitle">Only approved responders can access the operations dashboard.</p>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="staff-id">Staff ID</label>
+                <input id="staff-id" placeholder="RAPID-SEC-01" />
+              </div>
+              <div class="field">
+                <label for="staff-code">Access Code</label>
+                <input id="staff-code" type="password" placeholder="Enter secure access code" />
+              </div>
+              <div class="button-row">
+                <button class="btn btn-primary" id="staff-login-btn">Verify & Continue</button>
+                <button class="btn btn-outline" id="staff-back-btn">Go Back</button>
+              </div>
+              <div class="auth-note" id="staff-auth-status">Enter approved staff credentials to continue.</div>
+              <div class="auth-note">Demo approved IDs: `RAPID-SEC-01`, `RAPID-MED-03`, `RAPID-FIRE-06`.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-guest" class="screen">
+        <div class="grid grid-guest">
+          <div class="card">
+            <div class="card-header">
+              <h1 class="title">Report Emergency</h1>
+              <p class="subtitle">Tell us what’s happening. The system will classify the incident, suggest instructions, and dispatch help immediately.</p>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="guest-name">Your Name (Optional)</label>
+                <input id="guest-name" placeholder="John Doe" />
+              </div>
+
+              <div class="field">
+                <label for="guest-room">Location</label>
+                <select id="guest-room"></select>
+                <div class="location-pill">
+                  <div>
+                    <div id="location-label" style="font-weight:700;">Room 201</div>
+                    <div class="location-meta" id="location-meta">Default location selected for the demo.</div>
+                  </div>
+                  <button class="btn btn-outline" id="detect-location">Detect</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="guest-message">Describe the situation</label>
+                <textarea id="guest-message" placeholder="There is smoke in the hallway..."></textarea>
+              </div>
+
+              <div class="button-row">
+                <button class="btn btn-secondary" id="voice-btn">Voice</button>
+                <button class="btn btn-secondary" id="camera-btn">Camera</button>
+                <button class="btn btn-primary" id="analyze-btn">Analyze</button>
+              </div>
+              <div class="helper-note" id="capture-note">Voice and camera work best when this prototype is opened through Firebase Hosting or a local `http://` server.</div>
+
+              <div class="field">
+                <label>Preferred language for guest guidance</label>
+                <div class="language-row" id="language-row">
+                  <button class="lang-chip active" data-lang="en">English</button>
+                  <button class="lang-chip" data-lang="hi">Hindi</button>
+                  <button class="lang-chip" data-lang="pa">Punjabi</button>
+                </div>
+              </div>
+
+              <div id="analysis-box" class="analysis-box" style="display:none;"></div>
+
+              <div class="sos-card">
+                <div class="sos-area">
+                  <h2 style="margin:0;">Silent SOS</h2>
+                  <p class="subtitle" style="margin-top:6px;">Press and hold for 3 seconds to send a silent panic alert.</p>
+                  <div class="sos-ring" id="sos-ring">
+                    <button class="sos-button" id="sos-button">SOS</button>
+                  </div>
+                  <div class="subtitle" id="sos-status" style="margin-top:12px;">Ready</div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Quick Demo Inputs</label>
+                <div class="prompt-list">
+                  <button class="prompt-item" data-message="There is smoke coming from the back of the kitchen near the fryer.">Kitchen smoke emergency</button>
+                  <button class="prompt-item" data-message="My father fainted and is having trouble breathing.">Medical emergency</button>
+                  <button class="prompt-item" data-message="There is water leaking from the ceiling in room 212.">Water leak</button>
+                  <button class="prompt-item" data-message="Someone is trying to break into my room.">Security threat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-alert" class="screen">
+        <div class="grid grid-two">
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <h1 class="title">My Alert</h1>
+                <p class="subtitle">Live status tracker for the latest reported incident.</p>
+              </div>
+              <div class="card-body" id="alert-summary"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="title" style="font-size:1.2rem;">Timeline</h2>
+            </div>
+            <div class="card-body">
+              <div id="alert-timeline" class="timeline"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:24px;">
+          <div class="card-header">
+            <h2 class="title" style="font-size:1.2rem;">Response Intelligence</h2>
+          </div>
+          <div class="card-body" id="alert-intelligence"></div>
+        </div>
+      </section>
+
+      <section id="screen-map" class="screen">
+        <div class="card">
+          <div class="card-header">
+            <h1 class="title">Facility Map</h1>
+            <p class="subtitle">Rooms pulse red based on incident severity. Click a room to inspect the active incident.</p>
+          </div>
+          <div class="card-body">
+            <div class="map-controls">
+              <button class="floor-tab active" data-floor="floor-1">Ground Floor</button>
+              <button class="floor-tab" data-floor="floor-2">Floor 2</button>
+              <button class="floor-tab" data-floor="floor-3">Floor 3</button>
+            </div>
+            <div class="map-grid">
+              <div class="floor-map" id="floor-map"></div>
+              <div class="card" id="room-panel">
+                <div class="card-header">
+                  <h2 class="title" style="font-size:1.15rem;">Room Details</h2>
+                </div>
+                <div class="card-body" id="room-panel-body">
+                  <div class="empty">Select a highlighted room to inspect the active incident.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-staff" class="screen">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Active Alerts</div>
+            <strong id="kpi-active">0</strong>
+          </div>
+          <div class="kpi">
+            <div class="label">Critical Incidents</div>
+            <strong id="kpi-critical">0</strong>
+          </div>
+          <div class="kpi">
+            <div class="label">Available Staff</div>
+            <strong id="kpi-staff">0</strong>
+          </div>
+        </div>
+
+        <div class="grid grid-two">
+          <div class="card">
+            <div class="card-header">
+              <h1 class="title">Incident Feed</h1>
+              <div class="filter-row">
+                <button class="filter-pill active" data-filter="active">Active</button>
+                <button class="filter-pill" data-filter="critical">Critical</button>
+                <button class="filter-pill" data-filter="resolved">Resolved</button>
+                <button class="filter-pill" data-filter="all">All</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="incident-feed" class="incident-feed"></div>
+            </div>
+          </div>
+
+          <div class="grid" style="gap:24px;">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">Staff Availability</h2>
+              </div>
+              <div class="card-body">
+                <div id="staff-grid" class="staff-grid"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">Operations Insights</h2>
+              </div>
+              <div class="card-body" id="ops-insights"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">Broadcast Center</h2>
+              </div>
+              <div class="card-body">
+                <div class="button-row">
+                  <button class="btn btn-secondary broadcast-btn" data-type="evacuate">Send Evacuation Alert</button>
+                  <button class="btn btn-secondary broadcast-btn" data-type="medical">Call Medical Team</button>
+                  <button class="btn btn-secondary broadcast-btn" data-type="secure">Lock Nearby Zone</button>
+                </div>
+                <div id="broadcast-list" class="broadcast-list"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">System Log</h2>
+              </div>
+              <div class="card-body">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Event</th>
+                        <th>Note</th>
+                      </tr>
+                    </thead>
+                    <tbody id="log-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="media-modal" id="camera-modal">
+    <div class="media-shell">
+      <div class="card-header">
+        <h2 class="title" style="font-size:1.2rem;">Camera Capture</h2>
+        <p class="subtitle">Allow camera access, then capture the scene for rapid analysis.</p>
+      </div>
+      <div class="card-body">
+        <video id="camera-preview" class="media-preview" autoplay playsinline muted></video>
+        <canvas id="camera-canvas" style="display:none;"></canvas>
+        <div class="button-row">
+          <button class="btn btn-primary" id="capture-photo">Capture & Analyze</button>
+          <button class="btn btn-outline" id="close-camera">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./firebase-config.js"></script>
+  <script>
+    const STORAGE_KEY = "rapid-prototype-state-v2";
+    const languageLabels = { en: "English", hi: "Hindi", pa: "Punjabi" };
+    const guidanceTranslations = {
+      en: {
+        Fire: "Fire risk detected. Move away from the source and wait for responders.",
+        Medical: "Medical assistance is being prioritized. Keep the patient still if safe.",
+        Security: "Security threat detected. Stay quiet, lock the door if possible, and wait for responders.",
+        Flood: "Water hazard detected. Keep away from wet electrical surfaces.",
+        "Gas Leak": "Gas leak suspected. Leave the area immediately and avoid switches.",
+        Electrical: "Electrical hazard detected. Keep distance from exposed equipment.",
+        Other: "Emergency support has been notified. Stay in a safe area."
+      },
+      hi: {
+        Fire: "Aag ka khatra mila hai. Srot se door rahen aur responders ka intezar karein.",
+        Medical: "Medical madad ko priority di gayi hai. Yadi surakshit ho to patient ko sthir rakhein.",
+        Security: "Security threat mila hai. Shaant rahen, sambhav ho to darwaza lock karein aur madad ka intezar karein.",
+        Flood: "Paani ka khatra mila hai. Geeli electrical jagah se door rahen.",
+        "Gas Leak": "Gas leak ka shak hai. Turant jagah chhod dein aur switches na chhuein.",
+        Electrical: "Electrical hazard mila hai. Exposed equipment se door rahen.",
+        Other: "Emergency support ko suchit kar diya gaya hai. Surakshit jagah par rahen."
+      },
+      pa: {
+        Fire: "Aag da khatra milia hai. Srot ton door raho te responders di udeek karo.",
+        Medical: "Medical madad nu priority ditti gayi hai. Je surakhit hove tan mareez nu hilaao na.",
+        Security: "Security threat milia hai. Shaant raho, je mumkin hove tan darwaza lock karo te madad di udeek karo.",
+        Flood: "Paani da khatra milia hai. Gilli electrical jagah ton door raho.",
+        "Gas Leak": "Gas leak da shak hai. Turant area chhad deo te switches na chhoo.",
+        Electrical: "Electrical hazard milia hai. Exposed equipment ton door raho.",
+        Other: "Emergency support nu suchit kar ditta gaya hai. Surakhit jagah te raho."
+      }
+    };
+    const floors = [
+      {
+        id: "floor-1",
+        label: "Ground Floor",
+        rooms: [
+          { id: "lobby", label: "Lobby", x: 2, y: 4, width: 18, height: 14 },
+          { id: "reception", label: "Reception", x: 22, y: 4, width: 18, height: 14 },
+          { id: "concierge", label: "Concierge", x: 42, y: 4, width: 18, height: 14 },
+          { id: "restaurant", label: "Restaurant", x: 62, y: 4, width: 18, height: 14 },
+          { id: "bar", label: "Lobby Bar", x: 82, y: 4, width: 16, height: 14 },
+          { id: "boutique", label: "Boutique", x: 2, y: 22, width: 18, height: 14 },
+          { id: "gym", label: "Fitness Center", x: 22, y: 22, width: 18, height: 14 },
+          { id: "pool", label: "Pool Deck", x: 42, y: 22, width: 18, height: 14 },
+          { id: "kitchen", label: "Kitchen", x: 62, y: 22, width: 18, height: 14 },
+          { id: "laundry", label: "Laundry", x: 82, y: 22, width: 16, height: 14 },
+          { id: "boiler", label: "Boiler Room", x: 2, y: 40, width: 22, height: 14 },
+          { id: "ballroom", label: "Ballroom", x: 26, y: 40, width: 22, height: 14 },
+          { id: "stairs-1", label: "Stairwell", x: 50, y: 40, width: 22, height: 14 },
+          { id: "garage", label: "Valet Garage", x: 74, y: 40, width: 22, height: 14 }
+        ]
+      },
+      {
+        id: "floor-2",
+        label: "Floor 2",
+        rooms: [
+          { id: "201", label: "Room 201", x: 2, y: 6, width: 12, height: 16 },
+          { id: "202", label: "Room 202", x: 16, y: 6, width: 12, height: 16 },
+          { id: "203", label: "Room 203", x: 30, y: 6, width: 12, height: 16 },
+          { id: "204", label: "Room 204", x: 44, y: 6, width: 12, height: 16 },
+          { id: "205", label: "Room 205", x: 58, y: 6, width: 12, height: 16 },
+          { id: "206", label: "Room 206", x: 72, y: 6, width: 12, height: 16 },
+          { id: "hall-2", label: "Corridor 2", x: 2, y: 26, width: 94, height: 8 },
+          { id: "211", label: "Room 211", x: 2, y: 38, width: 12, height: 16 },
+          { id: "212", label: "Room 212", x: 16, y: 38, width: 12, height: 16 },
+          { id: "213", label: "Room 213", x: 30, y: 38, width: 12, height: 16 },
+          { id: "214", label: "Room 214", x: 44, y: 38, width: 12, height: 16 },
+          { id: "spa", label: "Spa Suite", x: 56, y: 38, width: 26, height: 16 },
+          { id: "stairs-2", label: "Stairwell", x: 84, y: 38, width: 14, height: 16 }
+        ]
+      },
+      {
+        id: "floor-3",
+        label: "Floor 3",
+        rooms: [
+          { id: "301", label: "Room 301", x: 2, y: 6, width: 12, height: 16 },
+          { id: "302", label: "Room 302", x: 16, y: 6, width: 12, height: 16 },
+          { id: "303", label: "Room 303", x: 30, y: 6, width: 12, height: 16 },
+          { id: "304", label: "Room 304", x: 44, y: 6, width: 12, height: 16 },
+          { id: "305", label: "Suite 305", x: 58, y: 6, width: 16, height: 16 },
+          { id: "306", label: "Suite 306", x: 76, y: 6, width: 16, height: 16 },
+          { id: "hall-3", label: "Corridor 3", x: 2, y: 26, width: 94, height: 8 },
+          { id: "311", label: "Room 311", x: 2, y: 38, width: 12, height: 16 },
+          { id: "312", label: "Room 312", x: 16, y: 38, width: 12, height: 16 },
+          { id: "313", label: "Room 313", x: 30, y: 38, width: 12, height: 16 },
+          { id: "314", label: "Room 314", x: 44, y: 38, width: 10, height: 16 },
+          { id: "lounge-3", label: "Sky Lounge", x: 56, y: 38, width: 18, height: 16 },
+          { id: "presidential", label: "Presidential", x: 76, y: 38, width: 18, height: 16 }
+        ]
+      }
+    ];
+
+    const seedStaff = [
+      { id: "staff-1", staffId: "RAPID-SEC-01", accessCode: "secure101", approved: true, name: "Priya Sharma", role: "Security Lead", available: true, location: "Lobby" },
+      { id: "staff-2", staffId: "RAPID-FLR-02", accessCode: "floor202", approved: true, name: "Marcus Hill", role: "Floor Manager", available: true, location: "Floor 2" },
+      { id: "staff-3", staffId: "RAPID-MED-03", accessCode: "medic303", approved: true, name: "Aiko Tanaka", role: "Medical Officer", available: true, location: "Reception" },
+      { id: "staff-4", staffId: "RAPID-MNT-04", accessCode: "maint404", approved: true, name: "Rafael Cruz", role: "Maintenance", available: true, location: "Boiler Room" },
+      { id: "staff-5", staffId: "RAPID-CON-05", accessCode: "guest505", approved: false, name: "Eva Lindqvist", role: "Concierge", available: false, location: "Floor 3" },
+      { id: "staff-6", staffId: "RAPID-FIRE-06", accessCode: "warden606", approved: true, name: "Jamal Okafor", role: "Fire Warden", available: true, location: "Ground Floor" }
+    ];
+
+    const seedIncidents = [
+      {
+        id: "fire-a1",
+        guestName: "Walk-in Guest",
+        roomId: "kitchen",
+        roomLabel: "Kitchen",
+        floorId: "floor-1",
+        message: "Smoke coming from the back of the kitchen near the fryer.",
+        source: "text",
+        classification: {
+          category: "Fire",
+          severity: "High",
+          callService: "Fire Brigade",
+          instructions: ["Evacuate the kitchen immediately.", "Do not use water on a grease fire."],
+          translatedSummary: "Smoke reported near the kitchen fryer.",
+          keywords: ["smoke", "fryer", "kitchen"]
+        },
+        status: "staff_dispatched",
+        assignedStaffId: "staff-6",
+        etaSeconds: 90,
+        createdAt: new Date(Date.now() - 12 * 60000).toISOString(),
+        timeline: [
+          { status: "alert_received", timestamp: new Date(Date.now() - 12 * 60000).toISOString(), note: "Alert received" },
+          { status: "staff_dispatched", timestamp: new Date(Date.now() - 11 * 60000).toISOString(), note: "Fire warden dispatched", staffName: "Jamal Okafor" }
+        ]
+      },
+      {
+        id: "flood-b2",
+        guestName: "Anjali R.",
+        roomId: "212",
+        roomLabel: "Room 212",
+        floorId: "floor-2",
+        message: "Mere kamre mein paani gir raha hai chhat se.",
+        source: "text",
+        classification: {
+          category: "Flood",
+          severity: "Medium",
+          callService: "Maintenance",
+          instructions: ["Move belongings away from the leak.", "Avoid electrical outlets near water."],
+          translatedSummary: "Water is leaking from the ceiling in room 212.",
+          keywords: ["paani", "leak", "ceiling"]
+        },
+        status: "alert_received",
+        createdAt: new Date(Date.now() - 20 * 60000).toISOString(),
+        timeline: [
+          { status: "alert_received", timestamp: new Date(Date.now() - 20 * 60000).toISOString(), note: "Alert received" }
+        ]
+      },
+      {
+        id: "security-c3",
+        guestName: "Suite Guest",
+        roomId: "presidential",
+        roomLabel: "Presidential",
+        floorId: "floor-3",
+        message: "There is someone trying to force the suite door open.",
+        source: "voice",
+        classification: {
+          category: "Security",
+          severity: "Critical",
+          callService: "Police",
+          instructions: ["Move to a secure place and stay quiet.", "Security has been alerted."],
+          translatedSummary: "Possible intruder reported outside the presidential suite.",
+          keywords: ["security", "intruder", "suite"]
+        },
+        status: "en_route",
+        assignedStaffId: "staff-1",
+        etaSeconds: 120,
+        createdAt: new Date(Date.now() - 6 * 60000).toISOString(),
+        timeline: [
+          { status: "alert_received", timestamp: new Date(Date.now() - 6 * 60000).toISOString(), note: "Alert received" },
+          { status: "staff_dispatched", timestamp: new Date(Date.now() - 5 * 60000).toISOString(), note: "Security lead assigned", staffName: "Priya Sharma" },
+          { status: "en_route", timestamp: new Date(Date.now() - 4 * 60000).toISOString(), note: "Security responding to suite corridor", staffName: "Priya Sharma" }
+        ]
+      }
+    ];
+
+    function allRooms() {
+      return floors.flatMap(floor => floor.rooms.map(room => ({ ...room, floorLabel: floor.label, floorId: floor.id })));
+    }
+
+    function findRoom(roomId) {
+      return allRooms().find(room => room.id === roomId);
+    }
+
+    function loadState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (parsed && Array.isArray(parsed.incidents) && Array.isArray(parsed.staff)) {
+          return {
+            incidents: parsed.incidents,
+            staff: parsed.staff,
+            broadcasts: Array.isArray(parsed.broadcasts) ? parsed.broadcasts : [],
+          };
+        }
+      } catch {}
+      return { incidents: structuredClone(seedIncidents), staff: structuredClone(seedStaff), broadcasts: [] };
+    }
+
+    let state = loadState();
+    let currentScreen = "guest";
+    let currentRole = null;
+    let currentStaffUser = null;
+    let selectedFloor = "floor-1";
+    let selectedRoom = null;
+    let selectedFilter = "active";
+    let draftClassification = null;
+    let sosTimeout = null;
+    let sosInterval = null;
+    let selectedLanguage = "en";
+    let voiceRecognition = null;
+    let voiceStream = null;
+    let voiceListening = false;
+    let cameraStream = null;
+    let backendMode = "local";
+    let firestoreDb = null;
+    let firebaseApi = null;
+    let syncingFromRemote = false;
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function renderBackendStatus() {
+      const badge = document.getElementById("backend-status");
+      if (!badge) return;
+      const firebaseReady = backendMode === "firebase";
+      badge.classList.toggle("online", firebaseReady);
+      badge.classList.toggle("offline", !firebaseReady);
+      badge.textContent = firebaseReady ? "Firebase Sync Live" : "System Active";
+    }
+
+    function plainStatePayload() {
+      return {
+        incidents: structuredClone(state.incidents),
+        staff: structuredClone(state.staff),
+        broadcasts: structuredClone(state.broadcasts),
+      };
+    }
+
+    async function writeRemoteState() {
+      if (backendMode !== "firebase" || !firestoreDb || !firebaseApi || syncingFromRemote) return;
+      const { doc, setDoc, serverTimestamp } = firebaseApi;
+      const payload = plainStatePayload();
+      await setDoc(
+        doc(firestoreDb, "rapid_meta", "prototype_state"),
+        {
+          ...payload,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+    }
+
+    async function initFirebaseBackend() {
+      const config = window.RAPID_FIREBASE_CONFIG;
+      if (!config || !config.apiKey) {
+        renderBackendStatus();
+        return;
+      }
+
+      try {
+        const appMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+        const firestoreMod = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+        const app = appMod.initializeApp(config);
+        firestoreDb = firestoreMod.getFirestore(app);
+        firebaseApi = firestoreMod;
+        backendMode = "firebase";
+
+        const stateRef = firestoreMod.doc(firestoreDb, "rapid_meta", "prototype_state");
+        const snapshot = await firestoreMod.getDoc(stateRef);
+
+        if (!snapshot.exists()) {
+          await firestoreMod.setDoc(stateRef, {
+            ...plainStatePayload(),
+            createdAt: firestoreMod.serverTimestamp(),
+            updatedAt: firestoreMod.serverTimestamp(),
+          });
+        } else {
+          const data = snapshot.data();
+          if (data?.incidents && data?.staff) {
+            syncingFromRemote = true;
+            state = {
+              incidents: Array.isArray(data.incidents) ? data.incidents : state.incidents,
+              staff: Array.isArray(data.staff) ? data.staff : state.staff,
+              broadcasts: Array.isArray(data.broadcasts) ? data.broadcasts : state.broadcasts,
+            };
+            saveState();
+            syncingFromRemote = false;
+          }
+        }
+
+        firestoreMod.onSnapshot(stateRef, (docSnap) => {
+          if (!docSnap.exists()) return;
+          const data = docSnap.data();
+          if (!data?.incidents || !data?.staff) return;
+          syncingFromRemote = true;
+          state = {
+            incidents: Array.isArray(data.incidents) ? data.incidents : state.incidents,
+            staff: Array.isArray(data.staff) ? data.staff : state.staff,
+            broadcasts: Array.isArray(data.broadcasts) ? data.broadcasts : state.broadcasts,
+          };
+          saveState();
+          syncingFromRemote = false;
+          render();
+        });
+        renderBackendStatus();
+      } catch (error) {
+        console.error("Firebase init failed, using local mode.", error);
+        backendMode = "local";
+        renderBackendStatus();
+      }
+    }
+
+    function severityClass(severity) {
+      return {
+        Low: "sev-low",
+        Medium: "sev-medium",
+        High: "sev-high",
+        Critical: "sev-critical"
+      }[severity] || "sev-medium";
+    }
+
+    function severityWeight(severity) {
+      return { Low: 1, Medium: 2, High: 3, Critical: 4 }[severity] || 0;
+    }
+
+    function confidenceScore(message, severity) {
+      const lengthBonus = Math.min((message || "").trim().length / 80, 0.12);
+      const severityBase = { Low: 0.68, Medium: 0.77, High: 0.85, Critical: 0.92 }[severity] || 0.74;
+      return Math.min(0.98, severityBase + lengthBonus);
+    }
+
+    function getResponseGuide(room) {
+      if (!room) {
+        return { nearestExit: "Main exit", stagingZone: "Reception desk", responderTeam: "Security" };
+      }
+      if (room.floorId === "floor-1") {
+        return { nearestExit: "Main lobby exit", stagingZone: "Reception desk", responderTeam: "Front desk + security" };
+      }
+      if (room.floorId === "floor-2") {
+        return { nearestExit: "East stairwell", stagingZone: "Floor 2 lift lobby", responderTeam: "Floor manager + maintenance" };
+      }
+      return { nearestExit: "West stairwell", stagingZone: "Sky lounge junction", responderTeam: "Security lead + concierge" };
+    }
+
+    function getIncidentResponderProgress(incident) {
+      if (!incident?.assignedStaffId) return null;
+      const staff = state.staff.find(item => item.id === incident.assignedStaffId);
+      const room = findRoom(incident.roomId);
+      const guide = incident.responseGuide || getResponseGuide(room);
+      const route = [
+        staff?.location || "Security desk",
+        guide.stagingZone,
+        guide.nearestExit,
+        incident.roomLabel
+      ];
+      let progressIndex = 0;
+      if (incident.status === "staff_dispatched") progressIndex = 1;
+      if (incident.status === "en_route") {
+        const enRouteStep = [...incident.timeline].reverse().find(item => item.status === "en_route" || item.status === "staff_dispatched");
+        const elapsed = enRouteStep ? (Date.now() - new Date(enRouteStep.timestamp).getTime()) / 1000 : 0;
+        progressIndex = elapsed > 90 ? 3 : elapsed > 35 ? 2 : 1;
+      }
+      if (incident.status === "resolved") progressIndex = 3;
+      return {
+        staff,
+        currentLocation: route[Math.min(progressIndex, route.length - 1)],
+        nextLocation: route[Math.min(progressIndex + 1, route.length - 1)],
+        progressLabel: progressIndex >= 3 ? "Responder has reached the guest location." : `Responder moving via ${route[Math.min(progressIndex + 1, route.length - 1)]}.`
+      };
+    }
+
+    function stopVoiceCapture() {
+      if (voiceRecognition && voiceListening) voiceRecognition.stop();
+      if (voiceStream) {
+        voiceStream.getTracks().forEach(track => track.stop());
+        voiceStream = null;
+      }
+      voiceListening = false;
+      document.getElementById("voice-btn").textContent = "Voice";
+    }
+
+    async function startVoiceCapture() {
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("mic-unavailable");
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) throw new Error("speech-unavailable");
+      voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      voiceRecognition = new Recognition();
+      voiceRecognition.lang = selectedLanguage === "hi" ? "hi-IN" : selectedLanguage === "pa" ? "pa-IN" : "en-US";
+      voiceRecognition.interimResults = true;
+      voiceRecognition.continuous = false;
+      voiceListening = true;
+      document.getElementById("voice-btn").textContent = "Stop Voice";
+      voiceRecognition.onresult = event => {
+        const transcript = Array.from(event.results).map(result => result[0].transcript).join(" ").trim();
+        if (transcript) document.getElementById("guest-message").value = transcript;
+      };
+      voiceRecognition.onerror = () => stopVoiceCapture();
+      voiceRecognition.onend = () => stopVoiceCapture();
+      voiceRecognition.start();
+    }
+
+    function stopCameraCapture() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      document.getElementById("camera-preview").srcObject = null;
+      document.getElementById("camera-modal").classList.remove("open");
+    }
+
+    async function startCameraCapture() {
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("camera-unavailable");
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      document.getElementById("camera-preview").srcObject = cameraStream;
+      document.getElementById("camera-modal").classList.add("open");
+    }
+
+    function showCaptureStatus(message) {
+      const note = document.getElementById("capture-note");
+      if (note) note.textContent = message;
+    }
+
+    function isRestrictedCaptureContext() {
+      return window.location.protocol === "file:" || !window.isSecureContext;
+    }
+
+    function translatedGuidance(category, lang) {
+      return guidanceTranslations[lang]?.[category] || guidanceTranslations.en[category] || guidanceTranslations.en.Other;
+    }
+
+    function activeIncidentHotspot() {
+      const counts = floors.map(floor => ({
+        floor: floor.label,
+        count: activeIncidents().filter(item => item.floorId === floor.id).length,
+      }));
+      return counts.sort((a, b) => b.count - a.count)[0];
+    }
+
+    function averageResolutionMinutes() {
+      const resolved = state.incidents.filter(item => item.status === "resolved" && item.timeline?.length);
+      if (!resolved.length) return null;
+      const total = resolved.reduce((sum, incident) => {
+        const start = new Date(incident.createdAt).getTime();
+        const end = new Date(incident.timeline[incident.timeline.length - 1].timestamp).getTime();
+        return sum + Math.max(0, end - start);
+      }, 0);
+      return Math.round(total / resolved.length / 60000);
+    }
+
+    function staffLoad() {
+      return state.staff.map(staff => ({
+        name: staff.name,
+        assignments: state.incidents.filter(item => item.assignedStaffId === staff.id && item.status !== "resolved").length,
+      })).sort((a, b) => b.assignments - a.assignments)[0];
+    }
+
+    function classifyMessage(message) {
+      const text = message.toLowerCase();
+      if (["fire", "smoke", "burn", "flames", "fryer"].some(token => text.includes(token))) {
+        return {
+          category: "Fire",
+          severity: "High",
+          callService: "Fire Brigade",
+          instructions: ["Move away from the fire source immediately.", "Avoid elevators and alert nearby staff."],
+          translatedSummary: "Possible fire or smoke emergency reported by guest.",
+          keywords: ["fire", "smoke"],
+          rationale: "Smoke and heat related keywords indicate a high likelihood of an active fire hazard."
+        };
+      }
+      if (["blood", "injury", "injured", "faint", "unconscious", "breathing", "medical", "chest"].some(token => text.includes(token))) {
+        return {
+          category: "Medical",
+          severity: "Critical",
+          callService: "Ambulance",
+          instructions: ["Keep the person still and clear the area.", "Call venue staff and emergency medical support now."],
+          translatedSummary: "Possible medical emergency reported by guest.",
+          keywords: ["medical", "breathing"],
+          rationale: "Breathing and collapse signals indicate a life-safety event that needs rapid escalation."
+        };
+      }
+      if (["intruder", "threat", "attack", "stalker", "break into", "help"].some(token => text.includes(token))) {
+        return {
+          category: "Security",
+          severity: "Critical",
+          callService: "Police",
+          instructions: ["Move to a secure place and stay quiet.", "Contact on-site security immediately."],
+          translatedSummary: "Possible security threat reported by guest.",
+          keywords: ["security", "threat"],
+          rationale: "Violence or intrusion terms indicate immediate guest safety risk."
+        };
+      }
+      if (["water", "flood", "leak", "ceiling", "paani"].some(token => text.includes(token))) {
+        return {
+          category: "Flood",
+          severity: "Medium",
+          callService: "Maintenance",
+          instructions: ["Move belongings away from the leak.", "Avoid wet electrical outlets and wait for staff."],
+          translatedSummary: "Possible leak or flooding issue reported by guest.",
+          keywords: ["water", "leak"],
+          rationale: "Water damage terms suggest medium operational risk with possible electrical exposure."
+        };
+      }
+      if (["gas", "smell", "odor"].some(token => text.includes(token))) {
+        return {
+          category: "Gas Leak",
+          severity: "Critical",
+          callService: "Gas Authority",
+          instructions: ["Leave the area immediately.", "Do not use electrical switches or open flames."],
+          translatedSummary: "Possible gas leak reported by guest.",
+          keywords: ["gas", "smell"],
+          rationale: "Gas odor mentions strongly correlate with evacuation-class hazards."
+        };
+      }
+      if (["spark", "electrical", "wire", "shock", "blackout"].some(token => text.includes(token))) {
+        return {
+          category: "Electrical",
+          severity: "High",
+          callService: "Electricians",
+          instructions: ["Stay away from exposed wiring.", "If safe, isolate the area and notify staff."],
+          translatedSummary: "Possible electrical hazard reported by guest.",
+          keywords: ["electrical", "spark"],
+          rationale: "Electrical keywords indicate infrastructure risk with potential injury."
+        };
+      }
+      return {
+        category: "Other",
+        severity: "Medium",
+        callService: "Security",
+        instructions: ["Move to a safe area if needed.", "Wait for venue staff to assist."],
+        translatedSummary: "Unclassified emergency reported by guest.",
+        keywords: ["other"],
+        rationale: "Fallback route used because the alert does not strongly match a known emergency pattern."
+      };
+    }
+
+    function issueBroadcast(type, incident) {
+      const roomText = incident?.roomLabel ? ` near ${incident.roomLabel}` : "";
+      const templates = {
+        evacuate: `Evacuate guests calmly${roomText}. Use stairs only and direct traffic to the nearest safe exit.`,
+        medical: `Medical response requested${roomText}. Clear access corridor and prepare first-aid support.`,
+        secure: `Secure the surrounding zone${roomText}. Restrict movement and guide guests away from the area.`,
+        dispatch: `Team dispatched to ${incident?.roomLabel || "incident location"}. Keep adjacent corridors clear for responders.`
+      };
+      state.broadcasts.unshift({
+        id: Math.random().toString(36).slice(2, 10),
+        type,
+        message: templates[type] || "Operational update shared with response team.",
+        timestamp: new Date().toISOString(),
+      });
+      state.broadcasts = state.broadcasts.slice(0, 8);
+      saveState();
+      writeRemoteState();
+    }
+
+    function createIncident({ guestName, roomId, message, source, classification, silent = false }) {
+      const room = findRoom(roomId);
+      if (!room) return;
+      const now = new Date().toISOString();
+      const guide = getResponseGuide(room);
+      const incident = {
+        id: Math.random().toString(36).slice(2, 10),
+        guestName,
+        roomId,
+        roomLabel: room.label,
+        floorId: room.floorId,
+        message,
+        source,
+        classification,
+        confidence: confidenceScore(message, classification.severity),
+        preferredLanguage: selectedLanguage,
+        guestGuidance: translatedGuidance(classification.category, selectedLanguage),
+        responseGuide: guide,
+        status: "alert_received",
+        createdAt: now,
+        silent,
+        timeline: [
+          {
+            status: "alert_received",
+            timestamp: now,
+            note: silent ? "Silent SOS received" : "Alert received"
+          }
+        ]
+      };
+      state.incidents.unshift(incident);
+      issueBroadcast(classification.severity === "Critical" ? "secure" : "dispatch", incident);
+      saveState();
+      writeRemoteState();
+      render();
+      openScreen("alert");
+    }
+
+    function updateIncidentStatus(id, status, note) {
+      const incident = state.incidents.find(item => item.id === id);
+      if (!incident) return;
+      let staffName;
+      if (status === "staff_dispatched" && !incident.assignedStaffId) {
+        const staff = state.staff.find(item => item.available);
+        if (staff) {
+          staff.available = false;
+          incident.assignedStaffId = staff.id;
+          incident.etaSeconds = 5 * 60;
+          staffName = staff.name;
+        }
+      }
+      if (status === "resolved" && incident.assignedStaffId) {
+        const assigned = state.staff.find(item => item.id === incident.assignedStaffId);
+        if (assigned) assigned.available = true;
+      }
+      incident.status = status;
+      incident.timeline.push({
+        status,
+        timestamp: new Date().toISOString(),
+        note: note || {
+          staff_dispatched: "Staff dispatched",
+          en_route: "Responder is en route",
+          resolved: "Incident resolved"
+        }[status] || "Status updated",
+        staffName
+      });
+      if (status === "staff_dispatched") issueBroadcast("dispatch", incident);
+      saveState();
+      writeRemoteState();
+      render();
+    }
+
+    function openScreen(name) {
+      if (!currentRole && name !== "role") return;
+      if (name === "staff" && !currentStaffUser) return;
+      currentScreen = name;
+      document.querySelectorAll(".nav-link[data-screen]").forEach(button => {
+        button.classList.toggle("active", button.dataset.screen === name);
+      });
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.toggle("active", screen.id === `screen-${name}`);
+      });
+    }
+
+    function renderRoleNavigation() {
+      document.querySelectorAll(".nav-link[data-role-view]").forEach(button => {
+        const visible = currentRole && button.dataset.roleView === currentRole && (button.dataset.roleView !== "staff" || !!currentStaffUser);
+        button.style.display = visible ? "" : "none";
+      });
+    }
+
+    function selectRole(role) {
+      currentRole = role;
+      if (role !== "staff") currentStaffUser = null;
+      renderRoleNavigation();
+      openScreen(role === "staff" ? "staff-auth" : "guest");
+    }
+
+    function verifyStaffAccess() {
+      const staffId = document.getElementById("staff-id").value.trim().toUpperCase();
+      const accessCode = document.getElementById("staff-code").value.trim();
+      const status = document.getElementById("staff-auth-status");
+      const matched = state.staff.find(item => item.staffId === staffId && item.accessCode === accessCode);
+      if (!matched) {
+        status.textContent = "Staff ID or access code is invalid.";
+        return;
+      }
+      if (!matched.approved) {
+        status.textContent = "This staff account is not approved for operations access.";
+        return;
+      }
+      currentStaffUser = matched;
+      status.textContent = `Verified: ${matched.name} (${matched.role})`;
+      renderRoleNavigation();
+      openScreen("staff");
+    }
+
+    function renderLocation() {
+      const select = document.getElementById("guest-room");
+      if (!select.dataset.ready) {
+        select.innerHTML = allRooms().map(room => `<option value="${room.id}">${room.floorLabel} - ${room.label}</option>`).join("");
+        select.value = "201";
+        select.dataset.ready = "true";
+      }
+      const room = findRoom(select.value);
+      document.getElementById("location-label").textContent = room ? room.label : "Unknown";
+      document.getElementById("location-meta").textContent = room ? `${room.floorLabel} · Default location selected for the demo.` : "No location selected.";
+    }
+
+    function renderAnalysis() {
+      const box = document.getElementById("analysis-box");
+      if (!draftClassification) {
+        box.style.display = "none";
+        box.innerHTML = "";
+        return;
+      }
+      box.style.display = "block";
+      const room = findRoom(document.getElementById("guest-room").value);
+      const guide = getResponseGuide(room);
+      const confidence = Math.round(confidenceScore(document.getElementById("guest-message").value.trim(), draftClassification.severity) * 100);
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+          <span class="badge ${severityClass(draftClassification.severity)}">${draftClassification.severity} · ${draftClassification.category}</span>
+          <span style="color:var(--muted);font-size:.92rem;">Service needed: ${draftClassification.callService}</span>
+        </div>
+        <div class="micro-grid">
+          <div class="micro-stat">
+            <div class="label">AI confidence</div>
+            <strong>${confidence}%</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Nearest exit</div>
+            <strong>${guide.nearestExit}</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Responder team</div>
+            <strong>${guide.responderTeam}</strong>
+          </div>
+        </div>
+        <p style="margin:14px 0 8px;"><strong>Summary</strong><br>${draftClassification.translatedSummary}</p>
+        <p style="margin:0 0 8px;"><strong>Why RAPID flagged this</strong><br>${draftClassification.rationale || "Pattern-based classification triggered operational routing."}</p>
+        <p style="margin:0 0 8px;"><strong>${languageLabels[selectedLanguage]} guidance</strong><br>${translatedGuidance(draftClassification.category, selectedLanguage)}</p>
+        <div><strong>Instructions</strong><ul>${draftClassification.instructions.map(item => `<li>${item}</li>`).join("")}</ul></div>
+        <div class="button-row">
+          <button class="btn btn-primary" id="confirm-alert">Confirm & Send Alert</button>
+          <button class="btn btn-outline" id="clear-alert">Clear</button>
+        </div>
+      `;
+      document.getElementById("confirm-alert").onclick = () => {
+        createIncident({
+          guestName: document.getElementById("guest-name").value.trim(),
+          roomId: document.getElementById("guest-room").value,
+          message: document.getElementById("guest-message").value.trim(),
+          source: "text",
+          classification: draftClassification
+        });
+        draftClassification = null;
+        document.getElementById("guest-message").value = "";
+        renderAnalysis();
+      };
+      document.getElementById("clear-alert").onclick = () => {
+        draftClassification = null;
+        renderAnalysis();
+      };
+    }
+
+    function latestIncident() {
+      return state.incidents[0] || null;
+    }
+
+    function renderAlert() {
+      const summary = document.getElementById("alert-summary");
+      const timeline = document.getElementById("alert-timeline");
+      const intelligence = document.getElementById("alert-intelligence");
+      const incident = latestIncident();
+      if (!incident) {
+        summary.innerHTML = '<div class="empty">No incidents yet. Create one from the Guest page.</div>';
+        timeline.innerHTML = "";
+        intelligence.innerHTML = '<div class="empty">AI routing details will appear after the first alert.</div>';
+        return;
+      }
+      const assigned = incident.assignedStaffId ? state.staff.find(item => item.id === incident.assignedStaffId) : null;
+      const guide = incident.responseGuide || getResponseGuide(findRoom(incident.roomId));
+      const confidence = Math.round((incident.confidence || confidenceScore(incident.message, incident.classification.severity)) * 100);
+      const responderProgress = getIncidentResponderProgress(incident);
+      summary.innerHTML = `
+        <div class="badge ${severityClass(incident.classification.severity)}">${incident.classification.severity} · ${incident.classification.category}</div>
+        <h2 style="margin:14px 0 6px;">${incident.roomLabel}</h2>
+        <div class="subtitle">${new Date(incident.createdAt).toLocaleString()} · ${incident.source}${incident.silent ? " · silent SOS" : ""}</div>
+        <div style="margin-top:16px;">${incident.classification.translatedSummary}</div>
+        ${incident.message ? `<div class="empty" style="margin-top:16px;">${incident.message}</div>` : ""}
+        <div style="margin-top:16px;color:var(--muted);">Current status: <strong style="color:var(--text);text-transform:capitalize;">${incident.status.replaceAll("_", " ")}</strong>${assigned ? ` · ${assigned.name}` : ""}</div>
+      `;
+      if (responderProgress) {
+        summary.innerHTML += `<div class="empty" style="margin-top:16px;"><strong>${responderProgress.staff?.name || "Responder"}</strong><br>Current location: ${responderProgress.currentLocation}<br>Next point: ${responderProgress.nextLocation}<br>${responderProgress.progressLabel}</div>`;
+      }
+      intelligence.innerHTML = `
+        <div class="micro-grid">
+          <div class="micro-stat">
+            <div class="label">AI confidence</div>
+            <strong>${confidence}%</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Nearest exit</div>
+            <strong>${guide.nearestExit}</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Staging zone</div>
+            <strong>${guide.stagingZone}</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Guest language</div>
+            <strong>${languageLabels[incident.preferredLanguage || "en"]}</strong>
+          </div>
+        </div>
+        <p style="margin:16px 0 8px;"><strong>Responder guidance</strong><br>${guide.responderTeam} should approach via ${guide.nearestExit} and stage at ${guide.stagingZone}.</p>
+        ${responderProgress ? `<p style="margin:0 0 8px;"><strong>Live responder location</strong><br>${responderProgress.staff?.name || "Responder"} is currently at ${responderProgress.currentLocation}. ${responderProgress.progressLabel}</p>` : ""}
+        <p style="margin:0;"><strong>Guest guidance</strong><br>${incident.guestGuidance || translatedGuidance(incident.classification.category, incident.preferredLanguage || "en")}</p>
+      `;
+      timeline.innerHTML = incident.timeline.slice().reverse().map(item => `
+        <div class="timeline-step">
+          <div style="font-weight:700;text-transform:capitalize;">${item.status.replaceAll("_", " ")}</div>
+          <div class="subtitle">${new Date(item.timestamp).toLocaleString()}</div>
+          <div style="margin-top:4px;">${item.note || ""}${item.staffName ? ` · ${item.staffName}` : ""}</div>
+        </div>
+      `).join("");
+    }
+
+    function activeIncidents() {
+      return state.incidents.filter(item => item.status !== "resolved");
+    }
+
+    function renderMap() {
+      const floor = floors.find(item => item.id === selectedFloor);
+      const container = document.getElementById("floor-map");
+      container.innerHTML = floor.rooms.map(room => {
+        const incidents = activeIncidents().filter(item => item.roomId === room.id);
+        const top = incidents.sort((a, b) => severityWeight(b.classification.severity) - severityWeight(a.classification.severity))[0];
+        const alertClass = top ? `alert-${top.classification.severity.toLowerCase()}` : "";
+        const gap = 0.5;
+        const selectedClass = selectedRoom === room.id ? "selected" : "";
+        return `<button class="room ${alertClass} ${selectedClass}" data-room="${room.id}" style="left:${room.x + gap}%;top:${room.y + gap}%;width:${Math.max(room.width - gap * 2, 6)}%;height:${Math.max(room.height - gap * 2, 6)}%;"><span class="room-label">${room.label}</span></button>`;
+      }).join("");
+      container.querySelectorAll(".room").forEach(room => {
+        room.onclick = () => {
+          selectedRoom = room.dataset.room;
+          container.querySelectorAll(".room").forEach(node => node.classList.toggle("selected", node.dataset.room === selectedRoom));
+          renderRoomPanel();
+        };
+      });
+      renderRoomPanel();
+    }
+
+    function renderRoomPanel() {
+      const body = document.getElementById("room-panel-body");
+      if (!body) return;
+      if (!selectedRoom) {
+        body.innerHTML = '<div class="empty">Select a highlighted room to inspect the active incident.</div>';
+        return;
+      }
+      const room = findRoom(selectedRoom);
+      if (!room) {
+        body.innerHTML = '<div class="empty">Room details unavailable.</div>';
+        return;
+      }
+      const incidents = activeIncidents().filter(item => item.roomId === selectedRoom);
+      if (!incidents.length) {
+        body.innerHTML = `<div class="empty">No active incidents in ${room.label}.</div>`;
+        return;
+      }
+      body.innerHTML = incidents.map((incident, index) => `
+        <div class="detail-stack" ${index > 0 ? 'style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border);"' : ""}>
+          <div class="detail-chip-row">
+            <span class="badge ${severityClass(incident.classification.severity)}">${incident.classification.severity}</span>
+            <span class="badge" style="background:var(--primary-soft);color:white;text-transform:capitalize;">${incident.status.replaceAll("_", " ")}</span>
+          </div>
+          <h3 style="margin:2px 0 0;">${room.label}</h3>
+          <div class="subtitle">${room.floorLabel}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Category:</strong> ${incident.classification.category}</div>
+          <div>${incident.classification.translatedSummary}</div>
+          <div class="empty">${incident.message || "Silent panic alert"}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Source:</strong> ${incident.source}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Service needed:</strong> ${incident.classification.callService}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Nearest exit:</strong> ${(incident.responseGuide || getResponseGuide(room)).nearestExit}</div>
+          <div class="detail-line"><strong style="color:var(--text);">AI confidence:</strong> ${Math.round((incident.confidence || confidenceScore(incident.message, incident.classification.severity)) * 100)}%</div>
+          <div class="detail-line"><strong style="color:var(--text);">Reported:</strong> ${new Date(incident.createdAt).toLocaleString()}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderStaff() {
+      document.getElementById("kpi-active").textContent = String(activeIncidents().length);
+      document.getElementById("kpi-critical").textContent = String(activeIncidents().filter(item => item.classification.severity === "Critical").length);
+      document.getElementById("kpi-staff").textContent = String(state.staff.filter(item => item.available).length);
+      const hotspot = activeIncidentHotspot();
+      const avgResolve = averageResolutionMinutes();
+      const busiest = staffLoad();
+
+      let incidents = [...state.incidents];
+      if (selectedFilter === "active") incidents = incidents.filter(item => item.status !== "resolved");
+      if (selectedFilter === "critical") incidents = incidents.filter(item => item.classification.severity === "Critical" && item.status !== "resolved");
+      if (selectedFilter === "resolved") incidents = incidents.filter(item => item.status === "resolved");
+
+      document.getElementById("incident-feed").innerHTML = incidents.length ? incidents.map(incident => `
+        <div class="incident-card">
+          <header>
+            <div>
+              <strong>${incident.roomLabel}</strong>
+              <div class="subtitle">${new Date(incident.createdAt).toLocaleString()} · ${incident.classification.category}</div>
+            </div>
+            <span class="badge ${severityClass(incident.classification.severity)}">${incident.classification.severity}</span>
+          </header>
+          <div>${incident.classification.translatedSummary}</div>
+          <div class="subtitle" style="margin-top:8px;text-transform:capitalize;">Status: ${incident.status.replaceAll("_", " ")}</div>
+          <div class="subtitle" style="margin-top:6px;">AI confidence: ${Math.round((incident.confidence || confidenceScore(incident.message, incident.classification.severity)) * 100)}% Â· Exit: ${(incident.responseGuide || getResponseGuide(findRoom(incident.roomId))).nearestExit}</div>
+          <div class="incident-actions">
+            ${incident.status === "alert_received" ? `<button class="btn btn-primary dispatch-btn" data-id="${incident.id}">Dispatch Staff</button>` : ""}
+            ${incident.status === "staff_dispatched" ? `<button class="btn btn-secondary enroute-btn" data-id="${incident.id}">Mark En Route</button>` : ""}
+            ${incident.status === "en_route" ? `<button class="btn btn-danger resolve-btn" data-id="${incident.id}">Mark Resolved</button>` : ""}
+            ${incident.status === "resolved" ? `<button class="btn btn-outline" disabled>Resolved</button>` : ""}
+          </div>
+        </div>
+      `).join("") : '<div class="empty">No incidents in this view.</div>';
+
+      document.querySelectorAll(".dispatch-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "staff_dispatched"));
+      document.querySelectorAll(".enroute-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "en_route"));
+      document.querySelectorAll(".resolve-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "resolved"));
+      document.querySelectorAll(".broadcast-btn").forEach(button => {
+        button.onclick = () => {
+          issueBroadcast(button.dataset.type, latestIncident());
+          renderStaff();
+        };
+      });
+
+      document.getElementById("staff-grid").innerHTML = state.staff.map(staff => `
+        <div class="staff-card">
+          <strong>${staff.name}</strong>
+          <div class="subtitle" style="margin-top:6px;">${staff.role} · ${staff.location}</div>
+          <div class="status-dot ${staff.available ? "" : "busy"}">${staff.available ? "Available" : "Busy"}</div>
+        </div>
+      `).join("");
+
+      document.getElementById("ops-insights").innerHTML = `
+        <div class="micro-grid">
+          <div class="micro-stat">
+            <div class="label">Hotspot floor</div>
+            <strong>${hotspot ? hotspot.floor : "No active alerts"}</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Hotspot load</div>
+            <strong>${hotspot ? hotspot.count : 0} active</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Avg resolve time</div>
+            <strong>${avgResolve !== null ? `${avgResolve} min` : "Pending"}</strong>
+          </div>
+          <div class="micro-stat">
+            <div class="label">Most loaded responder</div>
+            <strong>${busiest?.name || "Unassigned"}</strong>
+          </div>
+        </div>
+        <p style="margin:16px 0 0;color:var(--muted);">RAPID highlights the busiest floor, tracks closure time, and helps staff stage responders faster.</p>
+      `;
+
+      document.getElementById("broadcast-list").innerHTML = state.broadcasts.length ? state.broadcasts.map(item => `
+        <div class="broadcast-item">
+          <strong style="text-transform:capitalize;">${item.type} update</strong>
+          <div>${item.message}</div>
+          <div class="subtitle" style="margin-top:6px;">${new Date(item.timestamp).toLocaleString()}</div>
+        </div>
+      `).join("") : '<div class="empty">No broadcast messages sent yet.</div>';
+
+      const logs = state.incidents.flatMap(incident =>
+        incident.timeline.map(step => ({
+          time: step.timestamp,
+          room: incident.roomLabel,
+          status: step.status,
+          note: step.note || ""
+        }))
+      ).sort((a, b) => new Date(b.time) - new Date(a.time));
+
+      document.getElementById("log-body").innerHTML = logs.map(item => `
+        <tr>
+          <td>${new Date(item.time).toLocaleTimeString()}</td>
+          <td>${item.room}</td>
+          <td style="text-transform:capitalize;">${item.status.replaceAll("_", " ")}</td>
+          <td>${item.note}</td>
+        </tr>
+      `).join("");
+    }
+
+    function render() {
+      renderBackendStatus();
+      renderLocation();
+      renderAnalysis();
+      renderAlert();
+      renderMap();
+      renderStaff();
+    }
+
+    document.querySelectorAll(".nav-link[data-screen]").forEach(button => {
+      button.onclick = () => openScreen(button.dataset.screen);
+    });
+
+    document.querySelectorAll("[data-role-select]").forEach(button => {
+      button.onclick = () => selectRole(button.dataset.roleSelect);
+    });
+
+    document.getElementById("staff-login-btn").onclick = verifyStaffAccess;
+    document.getElementById("staff-back-btn").onclick = () => {
+      currentRole = null;
+      currentStaffUser = null;
+      renderRoleNavigation();
+      openScreen("role");
+    };
+
+    document.getElementById("guest-room").onchange = renderLocation;
+    document.getElementById("detect-location").onclick = () => {
+      const rooms = allRooms().filter(room => room.label.toLowerCase().includes("room"));
+      const selected = rooms[Math.floor(Math.random() * rooms.length)] || allRooms()[0];
+      document.getElementById("guest-room").value = selected.id;
+      document.getElementById("location-meta").textContent = `${selected.floorLabel} · Detected from your location (demo).`;
+      renderLocation();
+    };
+
+    document.getElementById("voice-btn").onclick = async () => {
+      try {
+        if (isRestrictedCaptureContext()) {
+          showCaptureStatus("Microphone access is blocked on file previews. Open this prototype on Firebase Hosting or local http to use real voice capture.");
+          alert("Microphone access is blocked on file:// previews. Host this page on Firebase Hosting or a local http server to use real voice capture.");
+          return;
+        }
+        if (voiceListening) {
+          stopVoiceCapture();
+        } else {
+          await startVoiceCapture();
+          showCaptureStatus("Microphone permission granted. Start speaking now.");
+        }
+      } catch (error) {
+        stopVoiceCapture();
+        showCaptureStatus("Microphone permission was denied or unavailable in this browser.");
+        alert("Microphone permission was denied or unavailable.");
+      }
+    };
+
+    document.getElementById("camera-btn").onclick = async () => {
+      try {
+        if (isRestrictedCaptureContext()) {
+          showCaptureStatus("Camera access is blocked on file previews. Open this prototype on Firebase Hosting or local http to use the real camera.");
+          alert("Camera access is blocked on file:// previews. Host this page on Firebase Hosting or a local http server to use the real camera.");
+          return;
+        }
+        await startCameraCapture();
+        showCaptureStatus("Camera permission granted. Capture the scene when ready.");
+      } catch (error) {
+        stopCameraCapture();
+        showCaptureStatus("Camera permission was denied or unavailable in this browser.");
+        alert("Camera permission was denied or unavailable.");
+      }
+    };
+
+    document.getElementById("close-camera").onclick = () => {
+      stopCameraCapture();
+    };
+
+    document.getElementById("capture-photo").onclick = () => {
+      const video = document.getElementById("camera-preview");
+      const canvas = document.getElementById("camera-canvas");
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      document.getElementById("guest-message").value = "Camera capture detected visible smoke or hazard near the selected location.";
+      draftClassification = {
+        category: "Fire",
+        severity: "High",
+        callService: "Fire Brigade",
+        instructions: ["Move away from the area immediately.", "Keep exits clear and wait for staff."],
+        translatedSummary: "Image capture suggests smoke or fire risk in the scene.",
+        keywords: ["image", "smoke"],
+        rationale: "Camera-assisted capture was used to flag a visible smoke or hazard pattern."
+      };
+      stopCameraCapture();
+      showCaptureStatus("Scene captured successfully and sent for rapid analysis.");
+      renderAnalysis();
+    };
+
+    document.getElementById("analyze-btn").onclick = () => {
+      const message = document.getElementById("guest-message").value.trim();
+      if (!message) return;
+      draftClassification = classifyMessage(message);
+      renderAnalysis();
+    };
+
+    document.querySelectorAll(".prompt-item").forEach(button => {
+      button.onclick = () => {
+        document.getElementById("guest-message").value = button.dataset.message;
+      };
+    });
+
+    document.querySelectorAll(".lang-chip").forEach(button => {
+      button.onclick = () => {
+        selectedLanguage = button.dataset.lang;
+        document.querySelectorAll(".lang-chip").forEach(item => item.classList.toggle("active", item === button));
+        if (draftClassification) renderAnalysis();
+      };
+    });
+
+    document.querySelectorAll(".floor-tab").forEach(button => {
+      button.onclick = () => {
+        selectedFloor = button.dataset.floor;
+        const firstVisibleIncident = activeIncidents().find(item => item.floorId === selectedFloor);
+        selectedRoom = firstVisibleIncident?.roomId || null;
+        document.querySelectorAll(".floor-tab").forEach(item => item.classList.toggle("active", item === button));
+        renderMap();
+      };
+    });
+
+    document.querySelectorAll(".filter-pill").forEach(button => {
+      button.onclick = () => {
+        selectedFilter = button.dataset.filter;
+        document.querySelectorAll(".filter-pill").forEach(item => item.classList.toggle("active", item === button));
+        renderStaff();
+      };
+    });
+
+    function stopSos() {
+      clearTimeout(sosTimeout);
+      clearInterval(sosInterval);
+      document.getElementById("sos-ring").style.setProperty("--sos-progress", "0%");
+      document.getElementById("sos-status").textContent = "Ready";
+    }
+
+    function startSos() {
+      stopSos();
+      const start = Date.now();
+      document.getElementById("sos-status").textContent = "Hold to trigger silent SOS...";
+      sosInterval = setInterval(() => {
+        const progress = Math.min(((Date.now() - start) / 3000) * 100, 100);
+        document.getElementById("sos-ring").style.setProperty("--sos-progress", `${progress}%`);
+      }, 40);
+      sosTimeout = setTimeout(() => {
+        stopSos();
+        document.getElementById("sos-status").textContent = "Silent SOS sent";
+        createIncident({
+          guestName: document.getElementById("guest-name").value.trim(),
+          roomId: document.getElementById("guest-room").value,
+          message: "",
+          source: "silent_sos",
+          silent: true,
+          classification: {
+            category: "Security",
+            severity: "Critical",
+            callService: "Police",
+            instructions: ["Stay where you are if it is safe.", "Help is on the way silently."],
+            translatedSummary: "Silent panic SOS triggered by guest.",
+            keywords: ["silent_sos", "panic"]
+          }
+        });
+      }, 3000);
+    }
+
+    const sosButton = document.getElementById("sos-button");
+    sosButton.addEventListener("pointerdown", startSos);
+    sosButton.addEventListener("pointerup", stopSos);
+    sosButton.addEventListener("pointerleave", stopSos);
+    sosButton.addEventListener("pointercancel", stopSos);
+
+    setInterval(() => {
+      if (state.incidents.some(item => item.status === "staff_dispatched" || item.status === "en_route")) {
+        render();
+      }
+    }, 15000);
+
+    renderRoleNavigation();
+    initFirebaseBackend().finally(() => {
+      render();
+    });
+  </script>
+</body>
+</html>
