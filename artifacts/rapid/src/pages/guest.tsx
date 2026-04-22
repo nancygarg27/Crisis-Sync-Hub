@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Mic, Send, AlertTriangle, X } from "lucide-react";
+import { Camera, Mic, Send, AlertTriangle, MapPin, Pencil } from "lucide-react";
 import { getSeverityColors } from "@/lib/severity";
 
 export function GuestPage() {
@@ -33,19 +33,31 @@ export function GuestPage() {
   const [guestName, setGuestName] = useState("");
   const [roomId, setRoomId] = useState<string>("");
   const [message, setMessage] = useState("");
-  
-  // Set default room
+  const [locationAuto, setLocationAuto] = useState(true);
+  const [editLocation, setEditLocation] = useState(false);
+
+  // Auto-detect location: prefer ?room=ID query param (e.g. from a QR code in
+  // each room), otherwise fall back to a sensible default.
   useEffect(() => {
-    if (floorMap && !roomId) {
-      for (const floor of floorMap.floors) {
-        const firstGuestRoom = floor.rooms.find(r => r.type === "guest_room");
-        if (firstGuestRoom) {
-          setRoomId(firstGuestRoom.id);
-          break;
-        }
-      }
+    if (!floorMap || roomId) return;
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("room");
+    const allRooms = floorMap.floors.flatMap(f => f.rooms);
+    if (fromUrl && allRooms.some(r => r.id === fromUrl)) {
+      setRoomId(fromUrl);
+      setLocationAuto(true);
+      return;
+    }
+    const firstGuestRoom = allRooms.find(r => r.type === "guest_room");
+    if (firstGuestRoom) {
+      setRoomId(firstGuestRoom.id);
+      setLocationAuto(true);
     }
   }, [floorMap, roomId]);
+
+  const currentRoom = floorMap?.floors
+    .flatMap(f => f.rooms.map(r => ({ ...r, floorLabel: f.label })))
+    .find(r => r.id === roomId);
 
   // Voice
   const [isRecording, setIsRecording] = useState(false);
@@ -215,22 +227,53 @@ export function GuestPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="room">Location</Label>
-            <Select value={roomId} onValueChange={setRoomId}>
-              <SelectTrigger id="room">
-                <SelectValue placeholder="Select location..." />
-              </SelectTrigger>
-              <SelectContent>
-                {floorMap?.floors.map(floor => (
-                  <SelectGroup key={floor.id}>
-                    <SelectLabel>{floor.label}</SelectLabel>
-                    {floor.rooms.map(room => (
-                      <SelectItem key={room.id} value={room.id}>{room.label}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Location</Label>
+            {!editLocation && currentRoom ? (
+              <div className="flex items-center justify-between gap-2 p-3 rounded-md border bg-muted/40">
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{currentRoom.label}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {currentRoom.floorLabel} {locationAuto && "· Auto-detected"}
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="shrink-0"
+                  onClick={() => setEditLocation(true)}
+                >
+                  <Pencil className="w-3.5 h-3.5 mr-1" />
+                  Change
+                </Button>
+              </div>
+            ) : (
+              <Select
+                value={roomId}
+                onValueChange={(v) => {
+                  setRoomId(v);
+                  setLocationAuto(false);
+                  setEditLocation(false);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select location..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {floorMap?.floors.map(floor => (
+                    <SelectGroup key={floor.id}>
+                      <SelectLabel>{floor.label}</SelectLabel>
+                      {floor.rooms.map(room => (
+                        <SelectItem key={room.id} value={room.id}>{room.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">

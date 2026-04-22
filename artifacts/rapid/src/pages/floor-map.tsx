@@ -61,7 +61,7 @@ export function FloorMapPage() {
         {floorMap.floors.map(floor => (
           <TabsContent key={floor.id} value={floor.id} className="mt-4">
             <Card className="p-4 bg-muted/30">
-              <div className="relative w-full aspect-[16/9] bg-card border rounded-lg overflow-hidden">
+              <div className="relative w-full aspect-[16/10] bg-card border rounded-lg overflow-hidden">
                 {/* A simplified map background or grid could go here */}
                 <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.2 }} />
 
@@ -105,18 +105,18 @@ export function FloorMapPage() {
                     <div
                       key={room.id}
                       onClick={() => hasIncident && setSelectedRoomId(room.id)}
-                      className={`absolute border flex items-center justify-center text-xs font-medium cursor-pointer transition-all hover:scale-[1.02]
+                      className={`absolute border rounded-md flex items-center justify-center text-[11px] font-medium cursor-pointer transition-all hover:scale-[1.02] hover:z-10
                         ${borderClass} ${bgClass} ${glowClass} ${pulseClass}
                       `}
                       style={{
-                        left: `${room.x}%`,
-                        top: `${room.y}%`,
-                        width: `${room.width}%`,
-                        height: `${room.height}%`,
+                        left: `calc(${room.x}% + 2px)`,
+                        top: `calc(${room.y}% + 2px)`,
+                        width: `calc(${room.width}% - 4px)`,
+                        height: `calc(${room.height}% - 4px)`,
                       }}
                       title={`${room.label} (${room.type})`}
                     >
-                      <div className="px-1 py-0.5 rounded bg-background/80 backdrop-blur-sm truncate max-w-[90%] text-foreground">
+                      <div className="px-1.5 py-0.5 rounded bg-background/85 backdrop-blur-sm truncate max-w-[92%] text-foreground leading-tight text-center">
                         {room.label}
                       </div>
                       {hasIncident && highestIncident && (
