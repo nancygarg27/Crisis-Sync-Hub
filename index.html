@@ -1302,6 +1302,7 @@
     let currentScreen = "guest";
     let currentRole = null;
     let currentStaffUser = null;
+    let currentGuestAlertId = null;
     let selectedFloor = "floor-1";
     let selectedRoom = null;
     let selectedFilter = "active";
@@ -1685,6 +1686,7 @@
         ]
       };
       state.incidents.unshift(incident);
+      currentGuestAlertId = incident.id;
       issueBroadcast(classification.severity === "Critical" ? "secure" : "dispatch", incident);
       saveState();
       writeRemoteState();
@@ -1841,7 +1843,8 @@
     }
 
     function latestIncident() {
-      return state.incidents[0] || null;
+      if (!currentGuestAlertId) return null;
+      return state.incidents.find(item => item.id === currentGuestAlertId) || null;
     }
 
     function renderAlert() {
