@@ -1,0 +1,34 @@
+Elaborate on these features
+
+21:46
+GDP Hackathon — Safety App Feature Elaboration
+These notes outline a women's/personal safety app with ML capabilities. Here's a detailed breakdown:
+
+ML Features (Core)
+1. 🚨 Emergency Detection (Basic Feature)
+The foundational feature of the app. Automatically detects when a user may be in danger using sensors and ML models, then triggers an alert pipeline to notify contacts or authorities.
+
+2. 🔁 Basic Rule-Based Logic (Fallback for when ML fails)
+A safety net in case the ML model is unavailable or unreliable:
+
+No movement after impact detected → ALERT — If the phone detects a sudden force followed by stillness, it assumes the user is incapacitated.
+Sudden fall detected → ALERT — Uses accelerometer data to identify freefall or collapse patterns.
+These two together form the Minimal Feature Set — the bare minimum the app must do to be viable.
+
+3. 📍 Live Location
+Real-time GPS tracking shared with trusted contacts.
+Integration with related authorities (police, ambulance) — location is pushed directly to emergency services, cutting response time significantly.
+4. 📡 Signal-Based Triggers
+Multiple ways to trigger an alert beyond pressing a button:
+
+Panic voice detection — detects screaming, shouting, or distress keywords via the microphone.
+Breathing pattern detection via microphone — uses audio ML to detect rapid/erratic breathing indicative of panic or stress (stress detection).
+5. 🗺️ Route-to-Safety (Navigate-to-Safety)
+An AI module that suggests safe routes, rules, and local regulations the user can follow to reach safety.
+Could integrate with maps to highlight well-lit roads, police stations, or safe zones.
+6. 📸 Photo/Proof Capture via Deep Learning
+Automatically captures photo/video evidence when an emergency is triggered.
+Supported by ML as evidence — DL models can authenticate, timestamp, and tag the media to make it legally admissible and tamper-proof.
+🔴 Panic Button (UI Layer)
+A normally accessible press button on the home screen.
+Includes a 10-second countdown timer before alert fires — prevents false alarms while still being fast enough in real emergencies.

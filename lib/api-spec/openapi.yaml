@@ -3,20 +3,25 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: RAPID Crisis Response API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: incidents
+    description: Crisis incident reporting and tracking
+  - name: floor
+    description: Floor map and room data
+  - name: staff
+    description: Staff and dispatch operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +29,161 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /incidents/classify:
+    post:
+      operationId: classifyIncident
+      tags: [incidents]
+      summary: Classify a crisis from text or image (no persistence)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassifyInput"
+      responses:
+        "200":
+          description: Classification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classification"
+
+  /incidents:
+    get:
+      operationId: listIncidents
+      tags: [incidents]
+      summary: List all incidents (staff view)
+      responses:
+        "200":
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Incident"
+    post:
+      operationId: createIncident
+      tags: [incidents]
+      summary: Create an incident from a guest report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncidentInput"
+      responses:
+        "201":
+          description: Created incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+
+  /incidents/silent-sos:
+    post:
+      operationId: createSilentSos
+      tags: [incidents]
+      summary: Trigger a silent SOS panic alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SilentSosInput"
+      responses:
+        "201":
+          description: Silent SOS incident created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+
+  /incidents/{id}:
+    get:
+      operationId: getIncident
+      tags: [incidents]
+      summary: Get a single incident with status timeline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Incident detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /incidents/{id}/status:
+    post:
+      operationId: updateIncidentStatus
+      tags: [incidents]
+      summary: Advance incident status (staff action)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusInput"
+      responses:
+        "200":
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /floor-map:
+    get:
+      operationId: getFloorMap
+      tags: [floor]
+      summary: Get floor + room layout for the heatmap
+      responses:
+        "200":
+          description: Floor map structure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FloorMap"
+
+  /staff:
+    get:
+      operationId: listStaff
+      tags: [staff]
+      summary: List on-duty staff and their availability
+      responses:
+        "200":
+          description: List of staff members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffMember"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +194,257 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    IncidentCategory:
+      type: string
+      enum: [Fire, Medical, Security, Flood, Gas Leak, Electrical, Other]
+
+    IncidentSeverity:
+      type: string
+      enum: [Low, Medium, High, Critical]
+
+    IncidentStatus:
+      type: string
+      enum: [alert_received, staff_dispatched, en_route, resolved]
+
+    IncidentSource:
+      type: string
+      enum: [text, voice, image, silent_sos]
+
+    Classification:
+      type: object
+      properties:
+        category:
+          $ref: "#/components/schemas/IncidentCategory"
+        severity:
+          $ref: "#/components/schemas/IncidentSeverity"
+        callService:
+          type: string
+        instructions:
+          type: array
+          items:
+            type: string
+        detectedLanguage:
+          type: string
+          description: ISO language name detected from the guest message
+        languageCode:
+          type: string
+          description: BCP-47 language code (e.g. en, hi, fr, es)
+        translatedSummary:
+          type: string
+          description: English summary of the original message
+        keywords:
+          type: array
+          items:
+            type: string
+      required:
+        - category
+        - severity
+        - callService
+        - instructions
+        - detectedLanguage
+        - languageCode
+        - translatedSummary
+        - keywords
+
+    ClassifyInput:
+      type: object
+      properties:
+        message:
+          type: string
+        imageBase64:
+          type: string
+          description: Base64 image data (no data URI prefix)
+      anyOf:
+        - required: [message]
+        - required: [imageBase64]
+
+    StatusEvent:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatus"
+        timestamp:
+          type: string
+          format: date-time
+        note:
+          type: string
+        staffName:
+          type: string
+      required:
+        - status
+        - timestamp
+
+    Incident:
+      type: object
+      properties:
+        id:
+          type: string
+        guestName:
+          type: string
+        roomId:
+          type: string
+        roomLabel:
+          type: string
+        floorId:
+          type: string
+        message:
+          type: string
+        source:
+          $ref: "#/components/schemas/IncidentSource"
+        classification:
+          $ref: "#/components/schemas/Classification"
+        status:
+          $ref: "#/components/schemas/IncidentStatus"
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusEvent"
+        assignedStaffId:
+          type: string
+        etaSeconds:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        silent:
+          type: boolean
+      required:
+        - id
+        - roomId
+        - roomLabel
+        - floorId
+        - source
+        - classification
+        - status
+        - timeline
+        - createdAt
+        - silent
+
+    CreateIncidentInput:
+      type: object
+      properties:
+        guestName:
+          type: string
+        roomId:
+          type: string
+        message:
+          type: string
+        source:
+          $ref: "#/components/schemas/IncidentSource"
+        classification:
+          $ref: "#/components/schemas/Classification"
+      required:
+        - roomId
+        - source
+        - classification
+
+    SilentSosInput:
+      type: object
+      properties:
+        guestName:
+          type: string
+        roomId:
+          type: string
+      required:
+        - roomId
+
+    UpdateStatusInput:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/IncidentStatus"
+        staffId:
+          type: string
+        etaSeconds:
+          type: integer
+        note:
+          type: string
+      required:
+        - status
+
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          description: Room type (guest_room, lobby, kitchen, restaurant, gym, pool, etc.)
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+      required:
+        - id
+        - label
+        - type
+        - x
+        - y
+        - width
+        - height
+
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        level:
+          type: integer
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/Room"
+      required:
+        - id
+        - label
+        - level
+        - rooms
+
+    FloorMap:
+      type: object
+      properties:
+        venueName:
+          type: string
+        floors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Floor"
+      required:
+        - venueName
+        - floors
+
+    StaffMember:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        available:
+          type: boolean
+        location:
+          type: string
+      required:
+        - id
+        - name
+        - role
+        - available
+        - location
