@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Mic, Send, AlertTriangle, MapPin, Pencil } from "lucide-react";
+import { Camera, Mic, Send, AlertTriangle, MapPin, Pencil, Loader2, LocateFixed } from "lucide-react";
 import { getSeverityColors } from "@/lib/severity";
 
 export function GuestPage() {
@@ -33,11 +33,13 @@ export function GuestPage() {
   const [guestName, setGuestName] = useState("");
   const [roomId, setRoomId] = useState<string>("");
   const [message, setMessage] = useState("");
-  const [locationAuto, setLocationAuto] = useState(true);
+  const [locationSource, setLocationSource] = useState<"default" | "url" | "gps" | "manual">("default");
   const [editLocation, setEditLocation] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [detectError, setDetectError] = useState<string | null>(null);
 
-  // Auto-detect location: prefer ?room=ID query param (e.g. from a QR code in
-  // each room), otherwise fall back to a sensible default.
+  // On first load: prefer ?room=ID query param (e.g. QR code in each room),
+  // otherwise fall back to a sensible default until the user taps Detect.
   useEffect(() => {
     if (!floorMap || roomId) return;
     const params = new URLSearchParams(window.location.search);
@@ -45,19 +47,66 @@ export function GuestPage() {
     const allRooms = floorMap.floors.flatMap(f => f.rooms);
     if (fromUrl && allRooms.some(r => r.id === fromUrl)) {
       setRoomId(fromUrl);
-      setLocationAuto(true);
+      setLocationSource("url");
       return;
     }
     const firstGuestRoom = allRooms.find(r => r.type === "guest_room");
     if (firstGuestRoom) {
       setRoomId(firstGuestRoom.id);
-      setLocationAuto(true);
+      setLocationSource("default");
     }
   }, [floorMap, roomId]);
+
+  const detectLocation = useCallback(() => {
+    if (!floorMap) return;
+    if (!navigator.geolocation) {
+      setDetectError("Location not supported in this browser.");
+      return;
+    }
+    setDetecting(true);
+    setDetectError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // Map the GPS reading to a room. In a real venue this would call an
+        // indoor-positioning service; for the demo we deterministically derive
+        // a room from the coordinate fractions so a stable spot always picks
+        // the same room.
+        const allRooms = floorMap.floors.flatMap(f => f.rooms);
+        const seed =
+          Math.floor(Math.abs(pos.coords.latitude * 1000)) +
+          Math.floor(Math.abs(pos.coords.longitude * 1000));
+        const room = allRooms[seed % allRooms.length];
+        if (room) {
+          setRoomId(room.id);
+          setLocationSource("gps");
+          setEditLocation(false);
+        }
+        setDetecting(false);
+      },
+      (err) => {
+        setDetecting(false);
+        setDetectError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied. Please pick your location manually."
+            : "Could not get your location. Please pick it manually.",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 },
+    );
+  }, [floorMap]);
 
   const currentRoom = floorMap?.floors
     .flatMap(f => f.rooms.map(r => ({ ...r, floorLabel: f.label })))
     .find(r => r.id === roomId);
+
+  const sourceLabel =
+    locationSource === "gps"
+      ? "Detected from your location"
+      : locationSource === "url"
+        ? "From room QR code"
+        : locationSource === "manual"
+          ? "Set manually"
+          : "Default — tap Detect to update";
 
   // Voice
   const [isRecording, setIsRecording] = useState(false);
@@ -229,33 +278,58 @@ export function GuestPage() {
           <div className="space-y-2">
             <Label>Location</Label>
             {!editLocation && currentRoom ? (
-              <div className="flex items-center justify-between gap-2 p-3 rounded-md border bg-muted/40">
-                <div className="flex items-center gap-2 min-w-0">
-                  <MapPin className="w-4 h-4 text-primary shrink-0" />
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium truncate">{currentRoom.label}</div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {currentRoom.floorLabel} {locationAuto && "· Auto-detected"}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2 p-3 rounded-md border bg-muted/40">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <MapPin className="w-4 h-4 text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium truncate">{currentRoom.label}</div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {currentRoom.floorLabel} · {sourceLabel}
+                      </div>
                     </div>
                   </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="shrink-0"
+                    onClick={() => setEditLocation(true)}
+                  >
+                    <Pencil className="w-3.5 h-3.5 mr-1" />
+                    Change
+                  </Button>
                 </div>
                 <Button
                   type="button"
+                  variant="outline"
                   size="sm"
-                  variant="ghost"
-                  className="shrink-0"
-                  onClick={() => setEditLocation(true)}
+                  className="w-full"
+                  onClick={detectLocation}
+                  disabled={detecting}
                 >
-                  <Pencil className="w-3.5 h-3.5 mr-1" />
-                  Change
+                  {detecting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Detecting your location...
+                    </>
+                  ) : (
+                    <>
+                      <LocateFixed className="w-4 h-4 mr-2" />
+                      Detect my location
+                    </>
+                  )}
                 </Button>
+                {detectError && (
+                  <p className="text-xs text-destructive">{detectError}</p>
+                )}
               </div>
             ) : (
               <Select
                 value={roomId}
                 onValueChange={(v) => {
                   setRoomId(v);
-                  setLocationAuto(false);
+                  setLocationSource("manual");
                   setEditLocation(false);
                 }}
               >
