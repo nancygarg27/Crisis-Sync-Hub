@@ -106,6 +106,14 @@
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px) scale(1.02);
+      background: rgba(239, 68, 68, 0.1);
+      color: #fecaca;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
     }
 
     .nav-link.active {
@@ -151,7 +159,10 @@
     }
 
     .screen { display: none; }
-    .screen.active { display: block; }
+    .screen.active {
+      display: block;
+      animation: screenIn .22s ease-out;
+    }
 
     .grid {
       display: grid;
@@ -159,8 +170,8 @@
     }
 
     .grid-guest {
-      grid-template-columns: minmax(0, 1fr);
-      max-width: 760px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+      max-width: 1120px;
       margin: 0 auto;
     }
 
@@ -180,6 +191,12 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(248, 250, 252, 0.16);
+      box-shadow: 0 20px 46px rgba(0, 0, 0, 0.34);
     }
 
     .card-header {
@@ -223,6 +240,13 @@
       padding: 13px 14px;
       font: inherit;
       outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(239, 68, 68, 0.55);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+      background: #20252d;
     }
 
     textarea {
@@ -272,15 +296,38 @@
       padding: 12px 16px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
+      transition: transform .16s ease, opacity .15s ease, box-shadow .16s ease, filter .16s ease, background .16s ease, color .16s ease, border-color .16s ease;
     }
 
-    .btn:hover { transform: translateY(-1px); }
+    .btn:hover {
+      transform: translateY(-3px) scale(1.025);
+      filter: brightness(1.08);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+    }
+
+    .btn:active {
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
     .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--card-2); color: var(--text); }
     .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
     .btn-danger { background: var(--critical); color: white; }
+
+    .btn-primary:hover { background: #f87171; }
+    .btn-secondary:hover {
+      background: #374151;
+      color: #f8fafc;
+      border-color: rgba(248, 250, 252, 0.18);
+    }
+    .btn-outline:hover {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.46);
+    }
+    .btn-danger:hover { background: #f43f5e; }
 
     .badge {
       display: inline-flex;
@@ -367,6 +414,104 @@
       padding: 12px 14px;
       text-align: left;
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .prompt-item:hover {
+      transform: translateY(-3px) scale(1.015);
+      background: rgba(59, 130, 246, 0.12);
+      color: #dbeafe;
+      border-color: rgba(59, 130, 246, 0.42);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .prompt-item:active {
+      transform: translateY(-1px) scale(0.985);
+    }
+
+    .hazard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .hazard-chip {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #21252d;
+      color: var(--text);
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .hazard-chip:hover,
+    .hazard-chip.active {
+      transform: translateY(-3px) scale(1.02);
+      border-color: rgba(239, 68, 68, 0.38);
+      background: rgba(239, 68, 68, 0.1);
+      color: #fecaca;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .hazard-chip:active {
+      transform: translateY(-1px) scale(0.985);
+    }
+
+    .guest-side {
+      display: grid;
+      gap: 18px;
+    }
+
+    .readiness-meter {
+      margin-top: 16px;
+      height: 10px;
+      border-radius: 999px;
+      background: #1f232a;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .readiness-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--low), var(--medium), var(--success));
+      transition: width .22s ease;
+    }
+
+    .safety-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .safety-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #21252d;
+      padding: 12px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .safety-item input {
+      width: auto;
+      margin-top: 3px;
+      accent-color: var(--success);
+    }
+
+    .guidance-card {
+      border: 1px solid rgba(34, 197, 94, 0.24);
+      border-radius: 16px;
+      background: rgba(34, 197, 94, 0.08);
+      padding: 14px;
+      line-height: 1.5;
     }
 
     .role-options {
@@ -384,6 +529,18 @@
       padding: 22px;
       text-align: left;
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-4px) scale(1.018);
+      background: #2b313b;
+      border-color: rgba(239, 68, 68, 0.38);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+    }
+
+    .role-card:active {
+      transform: translateY(-1px) scale(0.99);
     }
 
     .role-card strong {
@@ -419,6 +576,15 @@
       padding: 8px 12px;
       font-weight: 700;
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .lang-chip:hover {
+      transform: translateY(-2px) scale(1.03);
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.42);
+      color: #fecaca;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .lang-chip.active {
@@ -463,6 +629,20 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi::after {
+      content: "";
+      position: absolute;
+      inset: auto 18px 0;
+      height: 3px;
+      border-radius: 999px 999px 0 0;
+      background: linear-gradient(90deg, var(--primary), var(--medium), var(--success));
+      opacity: .72;
+      transform: translateX(-110%);
+      animation: scanLine 3.6s ease-in-out infinite;
     }
 
     .kpi .label {
@@ -521,6 +701,13 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 18px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .incident-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(239, 68, 68, 0.34);
+      background: #2a2f38;
     }
 
     .incident-card header {
@@ -538,6 +725,21 @@
       margin-top: 16px;
     }
 
+    .assignment-control {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+      max-width: 360px;
+    }
+
+    .assignment-control label {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
     .filter-row {
       display: flex;
       flex-wrap: wrap;
@@ -553,11 +755,26 @@
       color: var(--muted);
       font-weight: 700;
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .filter-pill:hover {
+      transform: translateY(-2px) scale(1.035);
+      background: rgba(239, 68, 68, 0.1);
+      color: #fecaca;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
     }
 
     .filter-pill.active {
       background: var(--primary-soft);
       color: white;
+    }
+
+    .role-view-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .staff-grid {
@@ -572,6 +789,12 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 16px;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .staff-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(34, 197, 94, 0.28);
     }
 
     .status-dot {
@@ -589,6 +812,7 @@
       height: 10px;
       border-radius: 50%;
       background: var(--success);
+      animation: liveBlink 1.6s ease-in-out infinite;
     }
 
     .status-dot.busy::before { background: #64748b; }
@@ -633,6 +857,14 @@
       color: var(--muted);
       font-weight: 700;
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .floor-tab:hover {
+      transform: translateY(-2px) scale(1.025);
+      background: rgba(59, 130, 246, 0.13);
+      color: #dbeafe;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .floor-tab.active {
@@ -677,6 +909,11 @@
       overflow: hidden;
     }
 
+    .room.has-live-alert {
+      border-color: rgba(248, 250, 252, 0.36);
+      background: linear-gradient(180deg, rgba(55, 65, 81, 0.98), rgba(31, 35, 42, 0.96));
+    }
+
     .room-label {
       display: block;
       max-width: 100%;
@@ -686,6 +923,35 @@
       white-space: normal;
       font-size: clamp(.54rem, .72vw, .8rem);
       letter-spacing: -0.01em;
+    }
+
+    .room-meta {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.82);
+      color: #f8fafc;
+      font-size: .58rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .room-assignee {
+      position: absolute;
+      left: 5px;
+      bottom: 5px;
+      max-width: calc(100% - 46px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #dbeafe;
+      font-size: .56rem;
+      font-weight: 800;
     }
 
     .room:hover { transform: scale(1.02); }
@@ -732,6 +998,83 @@
       margin-bottom: 6px;
     }
 
+    .broadcast-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .auth-security-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .ops-live-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ops-live-chip {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(33, 37, 45, 0.9);
+      padding: 12px 14px;
+      color: var(--muted);
+    }
+
+    .ops-live-chip strong {
+      display: block;
+      color: var(--text);
+      margin-top: 4px;
+      font-size: 1rem;
+    }
+
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #bbf7d0;
+      font-weight: 800;
+    }
+
+    .live-indicator::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.48);
+      animation: beacon 1.6s infinite;
+    }
+
+    .action-toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 50;
+      width: min(360px, calc(100% - 44px));
+      border: 1px solid rgba(34, 197, 94, 0.32);
+      border-radius: 16px;
+      background: rgba(33, 37, 45, 0.96);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      color: var(--text);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .action-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .media-modal {
       position: fixed;
       inset: 0;
@@ -769,6 +1112,27 @@
       50% { transform: scale(1.03); }
     }
 
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scanLine {
+      0%, 35% { transform: translateX(-110%); }
+      65%, 100% { transform: translateX(110%); }
+    }
+
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .55; transform: scale(.82); }
+    }
+
+    @keyframes beacon {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.48); }
+      70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
     .empty {
       border: 1px dashed var(--border);
       border-radius: 16px;
@@ -778,8 +1142,10 @@
     }
 
     @media (max-width: 980px) {
-      .grid-two, .map-grid { grid-template-columns: 1fr; }
+      .grid-two, .map-grid, .grid-guest { grid-template-columns: 1fr; }
       .kpis { grid-template-columns: 1fr; }
+      .ops-live-strip { grid-template-columns: 1fr; }
+      .hazard-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 720px) {
@@ -817,18 +1183,19 @@
         <div class="grid grid-role">
           <div class="card">
             <div class="card-header">
-              <h1 class="title">Who Are You?</h1>
-              <p class="subtitle">Choose your role to open the right crisis-response interface.</p>
+              <h1 class="title">RAPID Crisis Sync Hub</h1>
+              <p class="subtitle">Emergency reporting, AI triage, and live responder coordination.</p>
             </div>
             <div class="card-body">
+              <p class="subtitle">Choose a role to begin.</p>
               <div class="role-options">
                 <button class="role-card" data-role-select="guest">
                   <strong>Guest</strong>
-                  <div class="subtitle">Report emergencies, track your alert, and view the floor map.</div>
+                  <div class="subtitle">Report and track an alert.</div>
                 </button>
                 <button class="role-card" data-role-select="staff">
                   <strong>Staff</strong>
-                  <div class="subtitle">Open the operations dashboard, dispatch responders, and monitor incidents.</div>
+                  <div class="subtitle">Coordinate response teams.</div>
                 </button>
               </div>
             </div>
@@ -851,13 +1218,17 @@
               <div class="field">
                 <label for="staff-code">Access Code</label>
                 <input id="staff-code" type="password" placeholder="Enter secure access code" />
+                <div class="auth-security-row">
+                  <button class="btn btn-outline" id="toggle-code-btn" type="button">Show Code</button>
+                  <span class="auth-note" id="auth-security-note">Session locks for 30 seconds after 3 failed attempts.</span>
+                </div>
               </div>
               <div class="button-row">
                 <button class="btn btn-primary" id="staff-login-btn">Verify & Continue</button>
                 <button class="btn btn-outline" id="staff-back-btn">Go Back</button>
               </div>
               <div class="auth-note" id="staff-auth-status">Enter approved staff credentials to continue.</div>
-              <div class="auth-note">Demo approved IDs: `RAPID-SEC-01`, `RAPID-MED-03`, `RAPID-FIRE-06`.</div>
+              <div class="auth-note">Demo credential: Staff ID `RAPID-SEC-01`, Access Code `secure101`.</div>
             </div>
           </div>
         </div>
@@ -890,6 +1261,12 @@
 
               <div class="field">
                 <label for="guest-message">Describe the situation</label>
+                <div class="hazard-grid">
+                  <button class="hazard-chip" type="button" data-hazard="fire" data-message="I can see smoke and smell burning near my location.">Fire / Smoke</button>
+                  <button class="hazard-chip" type="button" data-hazard="medical" data-message="Someone needs urgent medical help and is having trouble breathing.">Medical Help</button>
+                  <button class="hazard-chip" type="button" data-hazard="security" data-message="I feel unsafe. Someone is trying to enter or threaten us.">Security Threat</button>
+                  <button class="hazard-chip" type="button" data-hazard="maintenance" data-message="There is water leaking or an electrical hazard near my room.">Leak / Electrical</button>
+                </div>
                 <textarea id="guest-message" placeholder="There is smoke in the hallway..."></textarea>
               </div>
 
@@ -903,10 +1280,11 @@
               <div class="field">
                 <label>Preferred language for guest guidance</label>
                 <div class="language-row" id="language-row">
-                  <button class="lang-chip active" data-lang="en">English</button>
-                  <button class="lang-chip" data-lang="hi">Hindi</button>
-                  <button class="lang-chip" data-lang="pa">Punjabi</button>
+                  <button class="lang-chip active" data-lang="en" type="button">English</button>
+                  <button class="lang-chip" data-lang="hi" type="button">Hindi</button>
+                  <button class="lang-chip" data-lang="pa" type="button">Punjabi</button>
                 </div>
+                <div class="helper-note" id="language-status">Guest guidance language: English.</div>
               </div>
 
               <div id="analysis-box" class="analysis-box" style="display:none;"></div>
@@ -929,6 +1307,69 @@
                   <button class="prompt-item" data-message="My father fainted and is having trouble breathing.">Medical emergency</button>
                   <button class="prompt-item" data-message="There is water leaking from the ceiling in room 212.">Water leak</button>
                   <button class="prompt-item" data-message="Someone is trying to break into my room.">Security threat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guest-side">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">Guest Safety Toolkit</h2>
+                <p class="subtitle">Interactive steps update as you prepare the alert.</p>
+              </div>
+              <div class="card-body">
+                <div class="micro-grid">
+                  <div class="micro-stat">
+                    <div class="label">Readiness</div>
+                    <strong id="guest-readiness-label">0%</strong>
+                  </div>
+                  <div class="micro-stat">
+                    <div class="label">Selected room</div>
+                    <strong id="guest-room-label">Room 201</strong>
+                  </div>
+                </div>
+                <div class="readiness-meter">
+                  <div class="readiness-fill" id="guest-readiness-fill"></div>
+                </div>
+                <div class="guidance-card" id="guest-live-guidance" style="margin-top:16px;">
+                  Add location and describe the emergency. RAPID will prepare instructions before sending.
+                </div>
+                <div class="safety-list">
+                  <label class="safety-item">
+                    <input class="safety-check" type="checkbox" data-step="location">
+                    <span>I am away from immediate danger.</span>
+                  </label>
+                  <label class="safety-item">
+                    <input class="safety-check" type="checkbox" data-step="people">
+                    <span>I checked if anyone nearby needs help.</span>
+                  </label>
+                  <label class="safety-item">
+                    <input class="safety-check" type="checkbox" data-step="exit">
+                    <span>I know the nearest safe exit or can stay sheltered.</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="title" style="font-size:1.2rem;">What Happens Next</h2>
+              </div>
+              <div class="card-body">
+                <div class="timeline">
+                  <div class="timeline-step">
+                    <div style="font-weight:700;">1. Send alert</div>
+                    <div class="subtitle">Your room, language, and message are routed to staff.</div>
+                  </div>
+                  <div class="timeline-step">
+                    <div style="font-weight:700;">2. Staff responds</div>
+                    <div class="subtitle">Responders assign ownership and update your live tracker.</div>
+                  </div>
+                  <div class="timeline-step">
+                    <div style="font-weight:700;">3. Follow guidance</div>
+                    <div class="subtitle">Stay safe, watch My Alert, and follow broadcast instructions.</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -992,6 +1433,23 @@
       </section>
 
       <section id="screen-staff" class="screen">
+        <div class="button-row" style="justify-content:flex-end;margin-bottom:16px;">
+          <button class="btn btn-outline" id="staff-logout-btn" type="button">End Staff Session</button>
+        </div>
+        <div class="ops-live-strip">
+          <div class="ops-live-chip">
+            <span class="live-indicator">Live Ops</span>
+            <strong id="ops-clock">--:--:--</strong>
+          </div>
+          <div class="ops-live-chip">
+            <span>Response Pulse</span>
+            <strong id="ops-pulse">Monitoring active alerts</strong>
+          </div>
+          <div class="ops-live-chip">
+            <span>Last Action</span>
+            <strong id="ops-last-action">Awaiting staff action</strong>
+          </div>
+        </div>
         <div class="kpis">
           <div class="kpi">
             <div class="label">Active Alerts</div>
@@ -1011,6 +1469,13 @@
           <div class="card">
             <div class="card-header">
               <h1 class="title">Incident Feed</h1>
+              <div class="role-view-row">
+                <button class="filter-pill active" data-role-filter="all">All Roles</button>
+                <button class="filter-pill" data-role-filter="Security">Security</button>
+                <button class="filter-pill" data-role-filter="Medical">Medical</button>
+                <button class="filter-pill" data-role-filter="Fire">Fire</button>
+                <button class="filter-pill" data-role-filter="Maintenance">Maintenance</button>
+              </div>
               <div class="filter-row">
                 <button class="filter-pill active" data-filter="active">Active</button>
                 <button class="filter-pill" data-filter="critical">Critical</button>
@@ -1050,6 +1515,35 @@
                   <button class="btn btn-secondary broadcast-btn" data-type="medical">Call Medical Team</button>
                   <button class="btn btn-secondary broadcast-btn" data-type="secure">Lock Nearby Zone</button>
                 </div>
+                <div class="broadcast-form">
+                  <div class="field">
+                    <label for="broadcast-incident">Target incident</label>
+                    <select id="broadcast-incident"></select>
+                  </div>
+                  <div class="field">
+                    <label for="broadcast-type">Alert type</label>
+                    <select id="broadcast-type">
+                      <option value="evacuate">Evacuation</option>
+                      <option value="medical">Medical</option>
+                      <option value="secure">Secure zone</option>
+                      <option value="dispatch">Responder dispatch</option>
+                      <option value="allclear">All clear</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="broadcast-audience">Audience</label>
+                    <select id="broadcast-audience">
+                      <option value="Response team">Response team</option>
+                      <option value="Guests near incident">Guests near incident</option>
+                      <option value="All guests and staff">All guests and staff</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="broadcast-message">Custom message</label>
+                    <textarea id="broadcast-message" placeholder="Optional message override"></textarea>
+                  </div>
+                  <button class="btn btn-primary" id="send-broadcast-btn" type="button">Send Broadcast</button>
+                </div>
                 <div id="broadcast-list" class="broadcast-list"></div>
               </div>
             </div>
@@ -1080,6 +1574,8 @@
     </main>
   </div>
 
+  <div class="action-toast" id="action-toast"></div>
+
   <div class="media-modal" id="camera-modal">
     <div class="media-shell">
       <div class="card-header">
@@ -1100,6 +1596,10 @@
   <script src="./firebase-config.js"></script>
   <script>
     const STORAGE_KEY = "rapid-prototype-state-v2";
+    const STAFF_SESSION_KEY = "rapid-staff-session-v1";
+    const STAFF_SESSION_MS = 30 * 60 * 1000;
+    const MAX_AUTH_ATTEMPTS = 3;
+    const AUTH_LOCK_MS = 30 * 1000;
     const languageLabels = { en: "English", hi: "Hindi", pa: "Punjabi" };
     const guidanceTranslations = {
       en: {
@@ -1193,11 +1693,11 @@
 
     const seedStaff = [
       { id: "staff-1", staffId: "RAPID-SEC-01", accessCode: "secure101", approved: true, name: "Priya Sharma", role: "Security Lead", available: true, location: "Lobby" },
-      { id: "staff-2", staffId: "RAPID-FLR-02", accessCode: "floor202", approved: true, name: "Marcus Hill", role: "Floor Manager", available: true, location: "Floor 2" },
-      { id: "staff-3", staffId: "RAPID-MED-03", accessCode: "medic303", approved: true, name: "Aiko Tanaka", role: "Medical Officer", available: true, location: "Reception" },
-      { id: "staff-4", staffId: "RAPID-MNT-04", accessCode: "maint404", approved: true, name: "Rafael Cruz", role: "Maintenance", available: true, location: "Boiler Room" },
-      { id: "staff-5", staffId: "RAPID-CON-05", accessCode: "guest505", approved: false, name: "Eva Lindqvist", role: "Concierge", available: false, location: "Floor 3" },
-      { id: "staff-6", staffId: "RAPID-FIRE-06", accessCode: "warden606", approved: true, name: "Jamal Okafor", role: "Fire Warden", available: true, location: "Ground Floor" }
+      { id: "staff-2", staffId: "RAPID-FLR-02", accessCode: null, approved: true, name: "Marcus Hill", role: "Floor Manager", available: true, location: "Floor 2" },
+      { id: "staff-3", staffId: "RAPID-MED-03", accessCode: null, approved: true, name: "Aiko Tanaka", role: "Medical Officer", available: true, location: "Reception" },
+      { id: "staff-4", staffId: "RAPID-MNT-04", accessCode: null, approved: true, name: "Rafael Cruz", role: "Maintenance", available: true, location: "Boiler Room" },
+      { id: "staff-5", staffId: "RAPID-CON-05", accessCode: null, approved: false, name: "Eva Lindqvist", role: "Concierge", available: false, location: "Floor 3" },
+      { id: "staff-6", staffId: "RAPID-FIRE-06", accessCode: null, approved: true, name: "Jamal Okafor", role: "Fire Warden", available: true, location: "Ground Floor" }
     ];
 
     const seedIncidents = [
@@ -1306,6 +1806,7 @@
     let selectedFloor = "floor-1";
     let selectedRoom = null;
     let selectedFilter = "active";
+    let selectedRoleFilter = "all";
     let draftClassification = null;
     let sosTimeout = null;
     let sosInterval = null;
@@ -1314,6 +1815,10 @@
     let voiceStream = null;
     let voiceListening = false;
     let cameraStream = null;
+    let authAttempts = 0;
+    let authLockedUntil = 0;
+    let lastOpsAction = "Awaiting staff action";
+    let toastTimeout = null;
     let backendMode = "local";
     let firestoreDb = null;
     let firebaseApi = null;
@@ -1330,6 +1835,35 @@
       badge.classList.toggle("online", firebaseReady);
       badge.classList.toggle("offline", !firebaseReady);
       badge.textContent = firebaseReady ? "Firebase Sync Live" : "System Active";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("action-toast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function setOpsAction(message) {
+      lastOpsAction = message;
+      const target = document.getElementById("ops-last-action");
+      if (target) target.textContent = message;
+      showToast(message);
+    }
+
+    function updateOpsLive() {
+      const clock = document.getElementById("ops-clock");
+      const pulse = document.getElementById("ops-pulse");
+      const lastAction = document.getElementById("ops-last-action");
+      if (clock) clock.textContent = new Date().toLocaleTimeString();
+      if (pulse) {
+        const active = activeIncidents().length;
+        const critical = activeIncidents().filter(item => item.classification.severity === "Critical").length;
+        pulse.textContent = critical ? `${critical} critical / ${active} active` : `${active} active alert${active === 1 ? "" : "s"}`;
+      }
+      if (lastAction) lastAction.textContent = lastOpsAction;
     }
 
     function plainStatePayload() {
@@ -1532,10 +2066,10 @@
       return guidanceTranslations[lang]?.[category] || guidanceTranslations.en[category] || guidanceTranslations.en.Other;
     }
 
-    function activeIncidentHotspot() {
+    function activeIncidentHotspot(incidents = activeIncidents()) {
       const counts = floors.map(floor => ({
         floor: floor.label,
-        count: activeIncidents().filter(item => item.floorId === floor.id).length,
+        count: incidents.filter(item => item.floorId === floor.id).length,
       }));
       return counts.sort((a, b) => b.count - a.count)[0];
     }
@@ -1551,11 +2085,41 @@
       return Math.round(total / resolved.length / 60000);
     }
 
-    function staffLoad() {
-      return state.staff.map(staff => ({
+    function staffLoad(staffPool = state.staff) {
+      return staffPool.map(staff => ({
         name: staff.name,
         assignments: state.incidents.filter(item => item.assignedStaffId === staff.id && item.status !== "resolved").length,
       })).sort((a, b) => b.assignments - a.assignments)[0];
+    }
+
+    function staffMatchesRoleView(staff, role = selectedRoleFilter) {
+      if (role === "all") return true;
+      if (role === "Security") return staff.role.includes("Security") || staff.role.includes("Floor");
+      if (role === "Fire") return staff.role.includes("Fire");
+      return staff.role.includes(role);
+    }
+
+    function assignedStaffLabel(incident) {
+      const assigned = incident.assignedStaffId ? state.staff.find(staff => staff.id === incident.assignedStaffId) : null;
+      return assigned ? `${assigned.name} (${assigned.role})` : "Unassigned";
+    }
+
+    function assignmentControlHtml(incident) {
+      if (incident.status === "resolved") return "";
+      const incidentRole = roleForIncident(incident);
+      const staffChoices = state.staff.filter(staff => staff.approved && staffMatchesRoleView(staff, incidentRole) && (staff.available || staff.id === incident.assignedStaffId));
+      const options = [
+        '<option value="">Unassigned</option>',
+        ...staffChoices.map(staff => `<option value="${staff.id}" ${staff.id === incident.assignedStaffId ? "selected" : ""}>${staff.name} - ${staff.role}</option>`)
+      ].join("");
+      return `
+        <div class="assignment-control">
+          <label for="assign-${incident.id}">Responder assignment</label>
+          <select id="assign-${incident.id}" class="assignment-select" data-id="${incident.id}">
+            ${options}
+          </select>
+        </div>
+      `;
     }
 
     function classifyMessage(message) {
@@ -1637,23 +2201,52 @@
       };
     }
 
-    function issueBroadcast(type, incident) {
+    function issueBroadcast(type, incident, options = {}) {
       const roomText = incident?.roomLabel ? ` near ${incident.roomLabel}` : "";
       const templates = {
         evacuate: `Evacuate guests calmly${roomText}. Use stairs only and direct traffic to the nearest safe exit.`,
         medical: `Medical response requested${roomText}. Clear access corridor and prepare first-aid support.`,
         secure: `Secure the surrounding zone${roomText}. Restrict movement and guide guests away from the area.`,
-        dispatch: `Team dispatched to ${incident?.roomLabel || "incident location"}. Keep adjacent corridors clear for responders.`
+        dispatch: `Team dispatched to ${incident?.roomLabel || "incident location"}. Keep adjacent corridors clear for responders.`,
+        allclear: `All clear${roomText}. Resume normal movement while staff complete final checks.`
       };
       state.broadcasts.unshift({
         id: Math.random().toString(36).slice(2, 10),
         type,
-        message: templates[type] || "Operational update shared with response team.",
+        audience: options.audience || "Response team",
+        incidentId: incident?.id || null,
+        roomLabel: incident?.roomLabel || null,
+        sender: currentStaffUser?.name || "System",
+        message: options.message || templates[type] || "Operational update shared with response team.",
         timestamp: new Date().toISOString(),
       });
       state.broadcasts = state.broadcasts.slice(0, 8);
+      setOpsAction(`${type.replaceAll("_", " ")} broadcast sent`);
       saveState();
       writeRemoteState();
+    }
+
+    function selectedBroadcastIncident() {
+      const select = document.getElementById("broadcast-incident");
+      if (!select) return latestIncident();
+      if (select.value === "latest") return latestIncident() || activeIncidents()[0] || null;
+      return state.incidents.find(item => item.id === select.value) || null;
+    }
+
+    function sendCustomBroadcast() {
+      const type = document.getElementById("broadcast-type").value;
+      const audience = document.getElementById("broadcast-audience").value;
+      const message = document.getElementById("broadcast-message").value.trim();
+      issueBroadcast(type, selectedBroadcastIncident(), { audience, message });
+      document.getElementById("broadcast-message").value = "";
+      renderStaff();
+    }
+
+    function syncStaffAvailability() {
+      const activeAssignments = new Set(activeIncidents().map(item => item.assignedStaffId).filter(Boolean));
+      state.staff.forEach(staff => {
+        staff.available = staff.approved && !activeAssignments.has(staff.id);
+      });
     }
 
     function createIncident({ guestName, roomId, message, source, classification, silent = false }) {
@@ -1688,6 +2281,7 @@
       state.incidents.unshift(incident);
       currentGuestAlertId = incident.id;
       issueBroadcast(classification.severity === "Critical" ? "secure" : "dispatch", incident);
+      setOpsAction(`${classification.category} alert created at ${room.label}`);
       saveState();
       writeRemoteState();
       render();
@@ -1701,15 +2295,10 @@
       if (status === "staff_dispatched" && !incident.assignedStaffId) {
         const staff = state.staff.find(item => item.available);
         if (staff) {
-          staff.available = false;
           incident.assignedStaffId = staff.id;
           incident.etaSeconds = 5 * 60;
           staffName = staff.name;
         }
-      }
-      if (status === "resolved" && incident.assignedStaffId) {
-        const assigned = state.staff.find(item => item.id === incident.assignedStaffId);
-        if (assigned) assigned.available = true;
       }
       incident.status = status;
       incident.timeline.push({
@@ -1722,7 +2311,46 @@
         }[status] || "Status updated",
         staffName
       });
+      syncStaffAvailability();
       if (status === "staff_dispatched") issueBroadcast("dispatch", incident);
+      setOpsAction(`${incident.roomLabel} marked ${status.replaceAll("_", " ")}`);
+      saveState();
+      writeRemoteState();
+      render();
+    }
+
+    function assignIncidentStaff(id, staffId) {
+      const incident = state.incidents.find(item => item.id === id);
+      if (!incident || incident.status === "resolved") return;
+      const assigned = state.staff.find(item => item.id === staffId);
+      if (!assigned) {
+        incident.assignedStaffId = null;
+        incident.etaSeconds = null;
+        incident.status = "alert_received";
+        incident.timeline.push({
+          status: "alert_received",
+          timestamp: new Date().toISOString(),
+          note: "Assignment cleared"
+        });
+        syncStaffAvailability();
+        setOpsAction(`Assignment cleared for ${incident.roomLabel}`);
+        saveState();
+        writeRemoteState();
+        render();
+        return;
+      }
+      incident.assignedStaffId = assigned.id;
+      incident.etaSeconds = incident.etaSeconds || 5 * 60;
+      if (incident.status === "alert_received") incident.status = "staff_dispatched";
+      incident.timeline.push({
+        status: incident.status,
+        timestamp: new Date().toISOString(),
+        note: `${assigned.name} assigned`,
+        staffName: assigned.name
+      });
+      syncStaffAvailability();
+      issueBroadcast("dispatch", incident);
+      setOpsAction(`${assigned.name} assigned to ${incident.roomLabel}`);
       saveState();
       writeRemoteState();
       render();
@@ -1754,20 +2382,78 @@
       openScreen(role === "staff" ? "staff-auth" : "guest");
     }
 
+    function saveStaffSession(staff) {
+      localStorage.setItem(STAFF_SESSION_KEY, JSON.stringify({
+        staffId: staff.id,
+        expiresAt: Date.now() + STAFF_SESSION_MS
+      }));
+    }
+
+    function clearStaffSession() {
+      localStorage.removeItem(STAFF_SESSION_KEY);
+      currentStaffUser = null;
+      renderRoleNavigation();
+    }
+
+    function restoreStaffSession() {
+      try {
+        const session = JSON.parse(localStorage.getItem(STAFF_SESSION_KEY) || "null");
+        if (!session || Date.now() > session.expiresAt) {
+          clearStaffSession();
+          return false;
+        }
+        const staff = state.staff.find(item => item.id === session.staffId && item.approved);
+        if (!staff) {
+          clearStaffSession();
+          return false;
+        }
+        currentRole = "staff";
+        currentStaffUser = staff;
+        renderRoleNavigation();
+        openScreen("staff");
+        return true;
+      } catch {
+        clearStaffSession();
+        return false;
+      }
+    }
+
+    function endStaffSession() {
+      clearStaffSession();
+      currentRole = null;
+      openScreen("role");
+    }
+
     function verifyStaffAccess() {
       const staffId = document.getElementById("staff-id").value.trim().toUpperCase();
       const accessCode = document.getElementById("staff-code").value.trim();
       const status = document.getElementById("staff-auth-status");
-      const matched = state.staff.find(item => item.staffId === staffId && item.accessCode === accessCode);
+      const now = Date.now();
+      if (now < authLockedUntil) {
+        status.textContent = `Too many failed attempts. Try again in ${Math.ceil((authLockedUntil - now) / 1000)} seconds.`;
+        return;
+      }
+      const matched = state.staff.find(item => item.staffId === "RAPID-SEC-01" && item.staffId === staffId && item.accessCode === accessCode);
       if (!matched) {
-        status.textContent = "Staff ID or access code is invalid.";
+        authAttempts += 1;
+        if (authAttempts >= MAX_AUTH_ATTEMPTS) {
+          authLockedUntil = Date.now() + AUTH_LOCK_MS;
+          authAttempts = 0;
+          status.textContent = "Too many failed attempts. Staff verification is locked for 30 seconds.";
+        } else {
+          status.textContent = `Staff ID or access code is invalid. ${MAX_AUTH_ATTEMPTS - authAttempts} attempt(s) left before temporary lock.`;
+        }
         return;
       }
       if (!matched.approved) {
         status.textContent = "This staff account is not approved for operations access.";
         return;
       }
+      authAttempts = 0;
+      authLockedUntil = 0;
       currentStaffUser = matched;
+      saveStaffSession(matched);
+      document.getElementById("staff-code").value = "";
       status.textContent = `Verified: ${matched.name} (${matched.role})`;
       renderRoleNavigation();
       openScreen("staff");
@@ -1783,6 +2469,43 @@
       const room = findRoom(select.value);
       document.getElementById("location-label").textContent = room ? room.label : "Unknown";
       document.getElementById("location-meta").textContent = room ? `${room.floorLabel} · Default location selected for the demo.` : "No location selected.";
+      updateGuestReadiness();
+    }
+
+    function setLanguage(lang, silent = false) {
+      selectedLanguage = languageLabels[lang] ? lang : "en";
+      document.querySelectorAll(".lang-chip").forEach(item => item.classList.toggle("active", item.dataset.lang === selectedLanguage));
+      const status = document.getElementById("language-status");
+      if (status) status.textContent = `Guest guidance language: ${languageLabels[selectedLanguage]}.`;
+      if (!silent) showToast(`Guest guidance set to ${languageLabels[selectedLanguage]}`);
+      if (draftClassification) renderAnalysis();
+      updateGuestReadiness();
+    }
+
+    function updateGuestReadiness() {
+      const message = document.getElementById("guest-message")?.value.trim() || "";
+      const room = findRoom(document.getElementById("guest-room")?.value);
+      const checks = [...document.querySelectorAll(".safety-check")];
+      const completedChecks = checks.filter(item => item.checked).length;
+      let score = 0;
+      if (room) score += 25;
+      if (message.length >= 12) score += 35;
+      if (draftClassification) score += 20;
+      score += Math.round((completedChecks / Math.max(checks.length, 1)) * 20);
+      score = Math.min(score, 100);
+      const fill = document.getElementById("guest-readiness-fill");
+      const label = document.getElementById("guest-readiness-label");
+      const roomLabel = document.getElementById("guest-room-label");
+      const guidance = document.getElementById("guest-live-guidance");
+      if (fill) fill.style.width = `${score}%`;
+      if (label) label.textContent = `${score}%`;
+      if (roomLabel) roomLabel.textContent = room ? room.label : "Unknown";
+      if (guidance) {
+        const category = draftClassification?.category || classifyMessage(message || "other").category;
+        guidance.textContent = message
+          ? `${translatedGuidance(category, selectedLanguage)} ${score >= 80 ? "You are ready to send or track this alert." : "Complete the checklist if it is safe to do so."}`
+          : "Pick an emergency type or describe what is happening. RAPID will prepare instructions before sending.";
+      }
     }
 
     function renderAnalysis() {
@@ -1793,6 +2516,7 @@
         return;
       }
       box.style.display = "block";
+      updateGuestReadiness();
       const room = findRoom(document.getElementById("guest-room").value);
       const guide = getResponseGuide(room);
       const confidence = Math.round(confidenceScore(document.getElementById("guest-message").value.trim(), draftClassification.severity) * 100);
@@ -1835,10 +2559,12 @@
         draftClassification = null;
         document.getElementById("guest-message").value = "";
         renderAnalysis();
+        updateGuestReadiness();
       };
       document.getElementById("clear-alert").onclick = () => {
         draftClassification = null;
         renderAnalysis();
+        updateGuestReadiness();
       };
     }
 
@@ -1909,6 +2635,19 @@
       return state.incidents.filter(item => item.status !== "resolved");
     }
 
+    function roleForIncident(incident) {
+      const category = incident.classification?.category || "Other";
+      if (["Medical"].includes(category)) return "Medical";
+      if (["Fire", "Gas Leak"].includes(category)) return "Fire";
+      if (["Flood", "Electrical"].includes(category)) return "Maintenance";
+      return "Security";
+    }
+
+    function roleScopedIncidents(incidents, role = selectedRoleFilter) {
+      if (role === "all") return incidents;
+      return incidents.filter(incident => roleForIncident(incident) === role);
+    }
+
     function renderMap() {
       const floor = floors.find(item => item.id === selectedFloor);
       const container = document.getElementById("floor-map");
@@ -1918,7 +2657,14 @@
         const alertClass = top ? `alert-${top.classification.severity.toLowerCase()}` : "";
         const gap = 0.5;
         const selectedClass = selectedRoom === room.id ? "selected" : "";
-        return `<button class="room ${alertClass} ${selectedClass}" data-room="${room.id}" style="left:${room.x + gap}%;top:${room.y + gap}%;width:${Math.max(room.width - gap * 2, 6)}%;height:${Math.max(room.height - gap * 2, 6)}%;"><span class="room-label">${room.label}</span></button>`;
+        const liveClass = incidents.length ? "has-live-alert" : "";
+        const assigned = top?.assignedStaffId ? state.staff.find(staff => staff.id === top.assignedStaffId) : null;
+        const statusText = top ? top.status.replaceAll("_", " ") : "";
+        return `<button class="room ${alertClass} ${selectedClass} ${liveClass}" data-room="${room.id}" title="${top ? `${top.classification.severity} ${top.classification.category} - ${statusText}` : room.label}" style="left:${room.x + gap}%;top:${room.y + gap}%;width:${Math.max(room.width - gap * 2, 6)}%;height:${Math.max(room.height - gap * 2, 6)}%;">
+          <span class="room-label">${room.label}</span>
+          ${incidents.length ? `<span class="room-meta">${incidents.length} live</span>` : ""}
+          ${assigned ? `<span class="room-assignee">${assigned.name.split(" ")[0]}</span>` : ""}
+        </button>`;
       }).join("");
       container.querySelectorAll(".room").forEach(room => {
         room.onclick = () => {
@@ -1960,6 +2706,8 @@
           <div class="empty">${incident.message || "Silent panic alert"}</div>
           <div class="detail-line"><strong style="color:var(--text);">Source:</strong> ${incident.source}</div>
           <div class="detail-line"><strong style="color:var(--text);">Service needed:</strong> ${incident.classification.callService}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Responder view:</strong> ${roleForIncident(incident)}</div>
+          <div class="detail-line"><strong style="color:var(--text);">Assigned:</strong> ${assignedStaffLabel(incident)}</div>
           <div class="detail-line"><strong style="color:var(--text);">Nearest exit:</strong> ${(incident.responseGuide || getResponseGuide(room)).nearestExit}</div>
           <div class="detail-line"><strong style="color:var(--text);">AI confidence:</strong> ${Math.round((incident.confidence || confidenceScore(incident.message, incident.classification.severity)) * 100)}%</div>
           <div class="detail-line"><strong style="color:var(--text);">Reported:</strong> ${new Date(incident.createdAt).toLocaleString()}</div>
@@ -1968,14 +2716,17 @@
     }
 
     function renderStaff() {
-      document.getElementById("kpi-active").textContent = String(activeIncidents().length);
-      document.getElementById("kpi-critical").textContent = String(activeIncidents().filter(item => item.classification.severity === "Critical").length);
-      document.getElementById("kpi-staff").textContent = String(state.staff.filter(item => item.available).length);
-      const hotspot = activeIncidentHotspot();
+      updateOpsLive();
+      const roleActiveIncidents = roleScopedIncidents(activeIncidents());
+      const roleStaff = state.staff.filter(staff => staffMatchesRoleView(staff));
+      document.getElementById("kpi-active").textContent = String(roleActiveIncidents.length);
+      document.getElementById("kpi-critical").textContent = String(roleActiveIncidents.filter(item => item.classification.severity === "Critical").length);
+      document.getElementById("kpi-staff").textContent = String(roleStaff.filter(item => item.available).length);
+      const hotspot = activeIncidentHotspot(roleActiveIncidents);
       const avgResolve = averageResolutionMinutes();
-      const busiest = staffLoad();
+      const busiest = staffLoad(roleStaff);
 
-      let incidents = [...state.incidents];
+      let incidents = roleScopedIncidents([...state.incidents]);
       if (selectedFilter === "active") incidents = incidents.filter(item => item.status !== "resolved");
       if (selectedFilter === "critical") incidents = incidents.filter(item => item.classification.severity === "Critical" && item.status !== "resolved");
       if (selectedFilter === "resolved") incidents = incidents.filter(item => item.status === "resolved");
@@ -1991,9 +2742,12 @@
           </header>
           <div>${incident.classification.translatedSummary}</div>
           <div class="subtitle" style="margin-top:8px;text-transform:capitalize;">Status: ${incident.status.replaceAll("_", " ")}</div>
+          <div class="subtitle" style="margin-top:6px;">Responder view: ${roleForIncident(incident)}</div>
+          <div class="subtitle" style="margin-top:6px;">Assigned to: ${assignedStaffLabel(incident)}</div>
           <div class="subtitle" style="margin-top:6px;">AI confidence: ${Math.round((incident.confidence || confidenceScore(incident.message, incident.classification.severity)) * 100)}% Â· Exit: ${(incident.responseGuide || getResponseGuide(findRoom(incident.roomId))).nearestExit}</div>
+          ${assignmentControlHtml(incident)}
           <div class="incident-actions">
-            ${incident.status === "alert_received" ? `<button class="btn btn-primary dispatch-btn" data-id="${incident.id}">Dispatch Staff</button>` : ""}
+            ${incident.status === "alert_received" ? `<button class="btn btn-primary dispatch-btn" data-id="${incident.id}">Auto Assign Staff</button>` : ""}
             ${incident.status === "staff_dispatched" ? `<button class="btn btn-secondary enroute-btn" data-id="${incident.id}">Mark En Route</button>` : ""}
             ${incident.status === "en_route" ? `<button class="btn btn-danger resolve-btn" data-id="${incident.id}">Mark Resolved</button>` : ""}
             ${incident.status === "resolved" ? `<button class="btn btn-outline" disabled>Resolved</button>` : ""}
@@ -2002,32 +2756,33 @@
       `).join("") : '<div class="empty">No incidents in this view.</div>';
 
       document.querySelectorAll(".dispatch-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "staff_dispatched"));
+      document.querySelectorAll(".assignment-select").forEach(select => select.onchange = () => assignIncidentStaff(select.dataset.id, select.value));
       document.querySelectorAll(".enroute-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "en_route"));
       document.querySelectorAll(".resolve-btn").forEach(button => button.onclick = () => updateIncidentStatus(button.dataset.id, "resolved"));
       document.querySelectorAll(".broadcast-btn").forEach(button => {
         button.onclick = () => {
-          issueBroadcast(button.dataset.type, latestIncident());
+          issueBroadcast(button.dataset.type, selectedBroadcastIncident());
           renderStaff();
         };
       });
 
-      document.getElementById("staff-grid").innerHTML = state.staff.map(staff => `
+      document.getElementById("staff-grid").innerHTML = roleStaff.map(staff => `
         <div class="staff-card">
           <strong>${staff.name}</strong>
           <div class="subtitle" style="margin-top:6px;">${staff.role} · ${staff.location}</div>
           <div class="status-dot ${staff.available ? "" : "busy"}">${staff.available ? "Available" : "Busy"}</div>
         </div>
-      `).join("");
+      `).join("") || '<div class="empty">No responders match this role view.</div>';
 
       document.getElementById("ops-insights").innerHTML = `
         <div class="micro-grid">
           <div class="micro-stat">
             <div class="label">Hotspot floor</div>
-            <strong>${hotspot ? hotspot.floor : "No active alerts"}</strong>
+            <strong>${hotspot?.count ? hotspot.floor : "No active alerts"}</strong>
           </div>
           <div class="micro-stat">
-            <div class="label">Hotspot load</div>
-            <strong>${hotspot ? hotspot.count : 0} active</strong>
+            <div class="label">Role view</div>
+            <strong>${selectedRoleFilter === "all" ? "All roles" : selectedRoleFilter}</strong>
           </div>
           <div class="micro-stat">
             <div class="label">Avg resolve time</div>
@@ -2041,10 +2796,17 @@
         <p style="margin:16px 0 0;color:var(--muted);">RAPID highlights the busiest floor, tracks closure time, and helps staff stage responders faster.</p>
       `;
 
+      const broadcastIncidentSelect = document.getElementById("broadcast-incident");
+      if (broadcastIncidentSelect) {
+        const activeOptions = activeIncidents().map(incident => `<option value="${incident.id}">${incident.roomLabel} - ${incident.classification.category} - ${incident.status.replaceAll("_", " ")}</option>`).join("");
+        broadcastIncidentSelect.innerHTML = `<option value="latest">Latest/current alert</option>${activeOptions}`;
+      }
+
       document.getElementById("broadcast-list").innerHTML = state.broadcasts.length ? state.broadcasts.map(item => `
         <div class="broadcast-item">
           <strong style="text-transform:capitalize;">${item.type} update</strong>
           <div>${item.message}</div>
+          <div class="subtitle" style="margin-top:6px;">Audience: ${item.audience || "Response team"}${item.roomLabel ? ` Â· Target: ${item.roomLabel}` : ""} Â· Sent by ${item.sender || "System"}</div>
           <div class="subtitle" style="margin-top:6px;">${new Date(item.timestamp).toLocaleString()}</div>
         </div>
       `).join("") : '<div class="empty">No broadcast messages sent yet.</div>';
@@ -2086,20 +2848,34 @@
     });
 
     document.getElementById("staff-login-btn").onclick = verifyStaffAccess;
+    document.getElementById("staff-code").addEventListener("keydown", event => {
+      if (event.key === "Enter") verifyStaffAccess();
+    });
+    document.getElementById("toggle-code-btn").onclick = () => {
+      const input = document.getElementById("staff-code");
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      document.getElementById("toggle-code-btn").textContent = isHidden ? "Hide Code" : "Show Code";
+    };
+    document.getElementById("staff-logout-btn").onclick = endStaffSession;
+    document.getElementById("send-broadcast-btn").onclick = sendCustomBroadcast;
     document.getElementById("staff-back-btn").onclick = () => {
-      currentRole = null;
-      currentStaffUser = null;
-      renderRoleNavigation();
-      openScreen("role");
+      endStaffSession();
     };
 
     document.getElementById("guest-room").onchange = renderLocation;
+    document.getElementById("guest-message").addEventListener("input", () => {
+      draftClassification = null;
+      document.querySelectorAll(".hazard-chip").forEach(item => item.classList.remove("active"));
+      updateGuestReadiness();
+    });
     document.getElementById("detect-location").onclick = () => {
       const rooms = allRooms().filter(room => room.label.toLowerCase().includes("room"));
       const selected = rooms[Math.floor(Math.random() * rooms.length)] || allRooms()[0];
       document.getElementById("guest-room").value = selected.id;
       document.getElementById("location-meta").textContent = `${selected.floorLabel} · Detected from your location (demo).`;
       renderLocation();
+      showToast(`Location detected: ${selected.label}`);
     };
 
     document.getElementById("voice-btn").onclick = async () => {
@@ -2162,6 +2938,7 @@
       stopCameraCapture();
       showCaptureStatus("Scene captured successfully and sent for rapid analysis.");
       renderAnalysis();
+      updateGuestReadiness();
     };
 
     document.getElementById("analyze-btn").onclick = () => {
@@ -2169,19 +2946,35 @@
       if (!message) return;
       draftClassification = classifyMessage(message);
       renderAnalysis();
+      showToast(`${draftClassification.category} alert preview ready`);
     };
+
+    document.querySelectorAll(".hazard-chip").forEach(button => {
+      button.onclick = () => {
+        document.querySelectorAll(".hazard-chip").forEach(item => item.classList.toggle("active", item === button));
+        document.getElementById("guest-message").value = button.dataset.message;
+        draftClassification = classifyMessage(button.dataset.message);
+        renderAnalysis();
+        showToast(`${button.textContent.trim()} selected`);
+      };
+    });
 
     document.querySelectorAll(".prompt-item").forEach(button => {
       button.onclick = () => {
         document.getElementById("guest-message").value = button.dataset.message;
+        draftClassification = classifyMessage(button.dataset.message);
+        renderAnalysis();
+        showToast("Demo incident loaded");
       };
+    });
+
+    document.querySelectorAll(".safety-check").forEach(input => {
+      input.onchange = updateGuestReadiness;
     });
 
     document.querySelectorAll(".lang-chip").forEach(button => {
       button.onclick = () => {
-        selectedLanguage = button.dataset.lang;
-        document.querySelectorAll(".lang-chip").forEach(item => item.classList.toggle("active", item === button));
-        if (draftClassification) renderAnalysis();
+        setLanguage(button.dataset.lang);
       };
     });
 
@@ -2195,10 +2988,18 @@
       };
     });
 
-    document.querySelectorAll(".filter-pill").forEach(button => {
+    document.querySelectorAll("[data-filter]").forEach(button => {
       button.onclick = () => {
         selectedFilter = button.dataset.filter;
-        document.querySelectorAll(".filter-pill").forEach(item => item.classList.toggle("active", item === button));
+        document.querySelectorAll("[data-filter]").forEach(item => item.classList.toggle("active", item === button));
+        renderStaff();
+      };
+    });
+
+    document.querySelectorAll("[data-role-filter]").forEach(button => {
+      button.onclick = () => {
+        selectedRoleFilter = button.dataset.roleFilter;
+        document.querySelectorAll("[data-role-filter]").forEach(item => item.classList.toggle("active", item === button));
         renderStaff();
       };
     });
@@ -2251,8 +3052,13 @@
       }
     }, 15000);
 
+    setInterval(updateOpsLive, 1000);
+
     renderRoleNavigation();
     initFirebaseBackend().finally(() => {
+      syncStaffAvailability();
+      restoreStaffSession();
+      setLanguage(selectedLanguage, true);
       render();
     });
   </script>

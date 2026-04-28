@@ -2,10 +2,26 @@
 
 RAPID is a hotel and venue emergency response prototype with a dark single-page frontend and an optional Firebase-backed realtime state layer.
 
+## Hackathon submission checklist
+
+- **Problem Statement:** Hospitality venues can lose critical response time when guest reports, responder assignments, multilingual guidance, floor-map context, and broadcast updates are spread across phone calls, chat groups, and manual logs.
+- **Solution Overview:** RAPID gives guests a fast emergency reporting flow, classifies the incident by category and severity, highlights the affected room on a live map, lets staff assign responders, sends targeted broadcasts, and keeps a timestamped operations log.
+- **Prototype Link:** Deploy `index.html` with Firebase Hosting or any static host, then use the live URL as the MVP link.
+- **Project Deck:** Include the problem, demo flow, architecture, screenshots, impact, and next steps. The first screen of the prototype now mirrors this story for judges.
+- **GitHub Repository:** Make this repository public and include the live URL in the repo description or README before submission.
+- **Demo Video:** Record a 2-3 minute walkthrough: Guest quick demo input -> AI analysis -> Staff login -> assignment -> broadcast -> resolve -> map/log review.
+
+## Judge demo path
+
+1. Open the prototype and choose `Guest`.
+2. Pick any `Quick Demo Input`, then select `Analyze` and `Confirm & Send Alert`.
+3. Open `Staff` and log in with Staff ID `RAPID-SEC-01` and Access Code `secure101`.
+4. Use role filters, assign a responder, send a targeted broadcast, inspect the live floor map, and resolve the incident.
+
 ## What is included
 
-- `prototype.html`
-  The fastest demo entry point. Open it directly for a local demo.
+- `index.html`
+  The fastest demo entry point. Open it directly for a local demo or deploy it as a static page.
 - `firebase-config.js`
   Runtime Firebase config for the prototype.
 - `firebase.json`
@@ -29,7 +45,7 @@ RAPID is a hotel and venue emergency response prototype with a dark single-page 
 
 ## Run locally without Firebase
 
-Open `prototype.html` directly in a browser.
+Open `index.html` directly in a browser.
 
 The app will run in `Local Demo Mode` and persist state in `localStorage`.
 
@@ -49,7 +65,7 @@ After config is added, the top bar will switch from `Local Demo Mode` to `Fireba
 
 ## Files to push to GitHub
 
-- `prototype.html`
+- `index.html`
 - `firebase.json`
 - `firebase.rules`
 - `firestore.indexes.json`
